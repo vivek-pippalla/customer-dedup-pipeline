@@ -16,3 +16,4 @@ __pycache__/
 docs/BUILD_PLAN.md
 #Never commit the virtual environment.
 .venv/
+test-temp/
