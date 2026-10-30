@@ -1,0 +1,1 @@
+"""Golden record survivorship rules."""

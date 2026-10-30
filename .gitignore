@@ -1,0 +1,18 @@
+# Local pipeline outputs and databases
+out/
+*.db
+*.db-wal
+*.db-shm
+data/generated/
+
+# Python and editor artifacts
+__pycache__/
+.pytest_cache/
+*.egg-info/
+.vscode/
+.venv/
+
+# Private implementation reference
+docs/BUILD_PLAN.md
+#Never commit the virtual environment.
+.venv/

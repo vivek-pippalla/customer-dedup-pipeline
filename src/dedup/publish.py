@@ -1,0 +1,1 @@
+"""Transactional output publishing."""

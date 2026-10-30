@@ -1,0 +1,30 @@
+[paths]
+db = "out/dedup.db"
+reports_dir = "reports"
+
+[thresholds]
+auto = 0.90
+review = 0.65
+min_coverage = 0.50
+last_name_min_jw = 0.90
+
+[weights]
+email = 0.30
+phone = 0.25
+name = 0.25
+address = 0.10
+dob = 0.10
+
+[source_priority]
+CRM = 1
+WEB = 2
+IMPORT = 3
+
+[blocking]
+block_cap = 200
+
+[validation]
+future_tolerance_hours = 24
+
+[logging]
+level = "INFO"
