@@ -1,0 +1,51 @@
+source_system,source_native_id,full_name,email,phone,address,postcode,dob,updated_at
+IMPORT,import-000001,Maggie Bennett,MAGGIE.BENNETT.00001@EXAMPLE.NET,,"24 Ashoka Road, Ahmedabad",380001,1963-04-17,2025-12-31T00:00:00Z
+IMPORT,import-000001,M Bennett, maggie.bennett.00001@example.net ,+91 93321-81960,"24 Ashoka Road, Ahmedabad",380001,1963-04-17,2025-12-30T00:00:00Z
+CRM,crm-000002,John Perry,john.perry.00002@example.org,09553419283,"119 Fern Road, Kochi",682001,1974-05-21,2023-11-27T07:17:31Z
+IMPORT,import-000002,John Perry,john.perry.00002@example.org,,"119 Fern Rd, Kochi",682001,,2024-08-15T19:47:53Z
+CRM,crm-000002,John Perry Duplicate,olivia.edwards.00003@example.com,+91 94627-04828,"223 Clover Road, Jaipur",302001,1990-05-27,2023-11-27T07:17:31Z
+CRM,crm-000004,Andrew Price,andrew.price.00004@example.org,,,570001,1983-08-04,2024-03-08T14:23:05Z
+IMPORT,import-000005,Ravi Johnson,ravi.johnson.00005@example.com,09165667010,,110001,1971-02-08,2023-01-23T22:12:45Z
+IMPORT,import-000006,Aisha Carter, aisha.carter.00006@example.com ,,,700001,1953-10-24,2025-06-03T23:02:19Z
+WEB,web-000007,Benjamin Price,,09462475107,"145 Willow Rd, Jaipur",302001,1956-02-18,2023-01-13T03:39:59Z
+WEB,web-000008,Anika Edwards,anika.edwards.00008@example.org,+91 95348-74016,,452001,1950-06-25,2024-10-29T15:36:36Z
+IMPORT,import-000004,Andrew Price,andrew.price.00004@example.org,09489638346,"113 Market Road, Mysuru",570001,1983-08-04,2024-05-31T00:46:18Z
+IMPORT,import-000009,Ibrahim Watson,not-an-email,93375 43303,"85 Meadow Rd, Bengaluru",560001,,2024-11-06T01:42:40Z
+WEB,web-000001,Maggie Bennett,MAGGIE.BENNETT.00001@EXAMPLE.NET,09332181960,"24 Ashoka Rd, Ahmedabad",380001,1963-04-17,2024-04-11T12:49:32Z
+WEB,web-000010,Ibrahim Reed,ibrahim.reed.00010@example.net,+91 96804-43699,"120 Maple Road, Coimbatore",641001,1978-08-22,2023-11-06T08:06:07Z
+CRM,crm-000011,Kavya Collins,kavya.collins.00011@mail.invalid,96320 16328,"13 Oak Road, Kolkata",700001,1985-04-28,2023-09-05T05:50:12Z
+CRM,crm-000012,Maggie Das,maggie.das.00012@mail.invalid,+91 91434-55812,"60 Elm Road, Hyderabad",500001,1974-12-05,2024-08-13T21:37:57Z
+WEB,web-000013,Noah Miller,,9734670656,"216 Fern Road, Surat",395001,1979-03-20,2024-08-11T22:50:59Z
+CRM,crm-000006,Aisha Carter,aisha.carter.00006@example.com,09647468723,"56 Lake Rd, Kolkata",700001,1953-10-24,2025-12-22T13:56:39Z
+CRM,crm-000005,Ravi Johnson,ravi.johnson.00005@example.com,9165667010,"187 Meadow Road, Delhi",110001,1971-02-08,2025-11-28T23:01:33Z
+WEB,web-000014,Joseph Phillips,joseph.phillips.00014@example.com,96716 57262,"167 River Road, Jaipur",302001,1967-10-26,2024-08-11T17:44:43Z
+IMPORT,import-000010,Ibrahim Reed,ibrahim.reed.00010@example.net,09680443699,"120 Maple Road, Coimbatore",641001,1978-08-22,2023-05-25T13:16:49Z
+IMPORT,import-000012,Maggie Das,maggie.das.00012@mail.invalid,+91 91434-55812,"60 Elm Road, Hyderabad",500001,1974-12-05,2024-03-05T12:39:11Z
+CRM,crm-000003,"Edwards, Olivia",olivia.edwards.00003@example.com,09462704828,"223 Clover Road, Jaipur",302001,1990-05-27,2023-03-21T19:27:46Z
+WEB,web-000015,"Campbell, Anika",anika.campbell.00015@example.net,+91 91318-69993,"98 River Road, Pune",411001,,2023-01-05T03:45:29Z
+IMPORT,import-000016,Aash Reed,akash.reed.00016@example.net,99361 83242,,,1960-05-20,2024-05-15T17:01:10Z
+CRM,crm-000017,,michael.turner.00017@example.com,92787 42967,,500001,,2024-09-19T20:44:17Z
+CRM,crm-000018,Jane Smith,joseph.phillips.00014@example.com,+91 94824-77109,"182 Hill Rd, Bengaluru",560001,1960-05-18,not-a-timestamp
+IMPORT,import-000019,Daniel Taylor,info@example.com,09840449972,"138 Oak Road, Lucknow",226001,1980-06-11,2024-08-22T18:03:32Z
+WEB,web-000020,Fatima Watson,fatima.watson.00020@mail.invalid,91870 26217,"87 Jasmine Road, Chandigarh",160017,1989-12-13,2024-03-22T10:15:56Z
+IMPORT,import-000021,Mike Foster,mike.foster.00021@example.com,09504556238,"145 MG Road, Ahmedabad",380001,1993-03-06,2025-04-29T02:39:20Z
+CRM,crm-000010,Ibrahim Reed,ibrahim.reed.00010@example.net,96804 43699,"120 Maple Road, Coimbatore",641001,1978-08-22,2025-12-01T08:27:29Z
+WEB,web-000022,Bill Murphy,bill.murphy.00022@example.org,93942 10470,"94 Station Road, Kochi",682001,1996-03-03,2024-06-10T04:13:11Z
+CRM,crm-000023,I Ward,isha.ward.00023@example.net,91604 81754,"98 Station Road, Patna",800001,2002-11-12,2023-08-06T03:15:53Z
+CRM,crm-000024,  Hanah Price  ,hannah.price.00024@mail.invalid,,"56 Market Road, Patna",800001,1978-08-08,2025-09-20T10:01:26Z
+CRM,crm-000025,BENJAMIN MORGAN, benjamin.morgan.00025@example.org ,9534874016,"29 Fern Road, Delhi",110001,1992-01-05,2023-03-09T08:45:56Z
+IMPORT,import-000026,James Reed,james.reed.00026@mail.invalid,+91 97115-92124,"163 Willow Rd, Chandigarh",160017,1987-09-23,2023-12-21T22:51:28Z
+WEB,web-000005,Ravi Johnson,,+91 91656-67010,"187 Meadow Road, Delhi",110001,1971-02-08,2024-09-30T04:03:21Z
+IMPORT,import-000027,"Bell, Grace",,,"58 Station Road, Pune",411001,2001-07-28,2025-10-18T03:35:03Z
+UNKNOWN,web-000028,F Carter,fatima.carter.00028@example.net,95991 02290,"70 Cedar Road, Kochi",,1978-11-14,2025-07-20T00:27:14Z
+CRM,crm-000016,Akash Reed,AKASH.REED.00016@EXAMPLE.NET,,"16 Cedar Road, Guwahati",781001,1960-05-20,2025-06-09T17:53:22Z
+CRM,crm-000029,John Walker,john.walker.00029@example.com,96136 96816,"191 Lake Road, Kochi",682001,1971-04-11,2025-12-31T00:00:00Z
+CRM,crm-000030,ZARA WHITE,,+91 95271-77449,"91 Birch Road, Pune",411001,1982-02-10
+IMPORT,import-000031,Fatima Shah,fatima.shah.00031@example.org,+91 90377-88925,"235 Market Road, Bhopal",462001,1968-07-14,2023-08-22T14:19:26Z
+WEB,web-000032,Liz Shah,liz.shah.00032@example.net,98652 81685,"93 Ashoka Rd, Bhopal",,1969-03-07,2025-08-18T01:52:59Z
+CRM,crm-000029,John Walker,john.walker.00029@example.com,96136 96816,"191 Lake Road, Kochi",682001,1971-04-11,2025-12-30T00:00:00Z
+CRM,crm-000033,Bob Collins,robert.collins.00033@example.org,9407581814,"196 Cedar Road, Surat",395001,,2023-12-15T19:24:42Z
+CRM,crm-000034,A Smith,andrew.smith.00034@mail.invalid,+91 99010-43289,"109 River Road, Mysuru",570001,1957-05-08,2024-10-28T19:11:09Z
+IMPORT,import-000035,"  Miler, Karan  ",,96706 54051,"62 Market Rd, Nagpur",440001,1996-11-21,2023-04-09T00:33:30Z
+WEB,web-000036,Joseph Jackson,joseph.jackson.00036@mail.invalid,94034 50541,,800001,1975-12-15,2025-04-27T08:45:34Z
+IMPORT,import-000029,"WALKER, JON",john.walker.00029@example.com,9613696816,"191 Lake Road, Kochi",682001,1971-04-11,2099-01-01T00:00:00Z

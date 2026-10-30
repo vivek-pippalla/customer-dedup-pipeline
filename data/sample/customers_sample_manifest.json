@@ -1,0 +1,14 @@
+{
+  "batches": 1,
+  "dup_rate": 0.35,
+  "family_rate": 0.1,
+  "generated_files": [
+    "customers_sample.csv"
+  ],
+  "invalid_rate": 0.14,
+  "late_rate": 0.1,
+  "out": "data/sample/customers_sample.csv",
+  "rows": 50,
+  "seed": 42,
+  "truth_out": "data/sample/ground_truth_sample.csv"
+}
