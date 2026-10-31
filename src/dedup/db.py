@@ -21,13 +21,13 @@ def connect(path: str | Path) -> sqlite3.Connection:
     return connection
 
 
-def init_schema(conn: sqlite3.Connection) -> None:
+def init_schema(conn: sqlite3.Connection, config: dict[str, object] | None = None) -> None:
     """Apply the packaged schema and seed configured source systems."""
     schema_path = Path(__file__).with_name("schema.sql")
     schema_sql = schema_path.read_text(encoding="utf-8")
     conn.executescript(schema_sql)
-    config = load_config()
-    priorities = config["source_priority"]
+    active_config = config if config is not None else load_config()
+    priorities = active_config["source_priority"]
     if not isinstance(priorities, dict):
         raise ValueError("configuration source_priority must be a table")
     conn.executemany(
