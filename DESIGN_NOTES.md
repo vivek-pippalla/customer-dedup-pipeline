@@ -26,6 +26,10 @@ TODO: Explain the decisions from BUILD_PLAN.md section 15.2 and any implementati
 - Ground-truth `row_number` is the one-based data-row position within its source CSV (the header is excluded). For multiple batches, one combined truth file records each CSV basename.
 - The manifest is named `<out stem>_manifest.json` beside the primary output path.
 
+### Phase 2B ingestion choice
+
+- Raw `source_system` remains byte-for-byte as received. `raw_customer_records.source_system_key` stores its trimmed uppercase form and references `source_systems`, allowing case- and whitespace-insensitive validation without rewriting source data.
+
 ## Trade-offs and limitations
 
 TODO: Review BUILD_PLAN.md sections 13 and 15.3.

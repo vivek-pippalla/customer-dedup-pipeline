@@ -42,7 +42,9 @@ COLUMN_DESCRIPTIONS = {
     "raw_customer_records": {
         "version_id": "Deterministic identity of this delivered version.",
         "source_record_id": "Stable identity of the logical source record.", "row_hash": "Fingerprint of original field values.",
-        "source_system": "Originating source system.", "source_native_id": "Original identifier in the source system.",
+        "source_system": "Original source system value exactly as received.",
+        "source_system_key": "Trimmed uppercase source system key used for referential integrity.",
+        "source_native_id": "Original identifier in the source system.",
         "full_name": "Original customer name.", "email": "Original email value.", "phone": "Original phone value.",
         "address": "Original address value.", "postcode": "Original postcode value.", "dob": "Original date of birth value.",
         "updated_at": "Original source update timestamp.", "source_file": "Input file basename.",
@@ -111,6 +113,19 @@ TABLE_ORIGINS = {
     "rejects": "source", "clean_customers": "derived", "candidate_pairs": "derived",
     "golden_customers": "derived", "golden_members": "derived", "golden_lineage": "derived",
     "review_queue": "derived", "review_decisions": "source",
+}
+
+COLUMN_ORIGIN_OVERRIDES = {
+    "raw_customer_records": {
+        "version_id": "derived", "source_record_id": "derived", "row_hash": "derived",
+        "source_system_key": "derived", "source_file": "derived", "source_row_number": "derived",
+        "first_seen_run_id": "derived",
+    },
+    "rejects": {
+        "reject_id": "derived", "source_file": "derived", "source_row_number": "derived",
+        "reason_code": "derived", "raw_line_hash": "derived", "first_seen_run_id": "derived",
+    },
+    "review_decisions": {"pair_id": "derived"},
 }
 
 ASSUMPTIONS = (
@@ -192,7 +207,7 @@ def render_dictionary(
             description = column_descriptions[table][name].replace("|", "\\|")
             lines.append(
                 f"| `{name}` | {column['type'] or '—'} | {nullable} | {key} | "
-                f"{TABLE_ORIGINS[table]} | {description} |"
+                f"{COLUMN_ORIGIN_OVERRIDES.get(table, {}).get(name, TABLE_ORIGINS[table])} | {description} |"
             )
     return "\n".join(lines) + "\n"
 

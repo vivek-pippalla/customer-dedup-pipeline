@@ -121,10 +121,11 @@
 
 | Column | SQLite type | Nullable | Key | Source or derived | Description |
 |---|---|---|---|---|---|
-| `version_id` | TEXT | no | PK | source | Deterministic identity of this delivered version. |
-| `source_record_id` | TEXT | no | — | source | Stable identity of the logical source record. |
-| `row_hash` | TEXT | no | — | source | Fingerprint of original field values. |
-| `source_system` | TEXT | no | FK → `source_systems.source_system` | source | Originating source system. |
+| `version_id` | TEXT | no | PK | derived | Deterministic identity of this delivered version. |
+| `source_record_id` | TEXT | no | — | derived | Stable identity of the logical source record. |
+| `row_hash` | TEXT | no | — | derived | Fingerprint of original field values. |
+| `source_system` | TEXT | no | — | source | Original source system value exactly as received. |
+| `source_system_key` | TEXT | no | FK → `source_systems.source_system` | derived | Trimmed uppercase source system key used for referential integrity. |
 | `source_native_id` | TEXT | no | — | source | Original identifier in the source system. |
 | `full_name` | TEXT | no | — | source | Original customer name. |
 | `email` | TEXT | yes | — | source | Original email value. |
@@ -133,9 +134,9 @@
 | `postcode` | TEXT | yes | — | source | Original postcode value. |
 | `dob` | TEXT | yes | — | source | Original date of birth value. |
 | `updated_at` | TEXT | no | — | source | Original source update timestamp. |
-| `source_file` | TEXT | yes | — | source | Input file basename. |
-| `source_row_number` | INTEGER | yes | — | source | One-based CSV row number including the header. |
-| `first_seen_run_id` | TEXT | no | FK → `runs.run_id` | source | Run that first stored this version. |
+| `source_file` | TEXT | yes | — | derived | Input file basename. |
+| `source_row_number` | INTEGER | yes | — | derived | One-based CSV row number including the header. |
+| `first_seen_run_id` | TEXT | no | FK → `runs.run_id` | derived | Run that first stored this version. |
 
 ## `rejects`
 
@@ -143,13 +144,13 @@
 
 | Column | SQLite type | Nullable | Key | Source or derived | Description |
 |---|---|---|---|---|---|
-| `reject_id` | INTEGER | no | PK | source | SQLite-assigned surrogate key for a rejected row. |
-| `source_file` | TEXT | yes | — | source | Input file basename. |
-| `source_row_number` | INTEGER | yes | — | source | One-based CSV row number including the header. |
-| `reason_code` | TEXT | yes | — | source | Validation reason for rejection. |
+| `reject_id` | INTEGER | no | PK | derived | SQLite-assigned surrogate key for a rejected row. |
+| `source_file` | TEXT | yes | — | derived | Input file basename. |
+| `source_row_number` | INTEGER | yes | — | derived | One-based CSV row number including the header. |
+| `reason_code` | TEXT | yes | — | derived | Validation reason for rejection. |
 | `raw_line` | TEXT | yes | — | source | Original rejected CSV line. |
-| `raw_line_hash` | TEXT | yes | — | source | Fingerprint of the original rejected line. |
-| `first_seen_run_id` | TEXT | yes | FK → `runs.run_id` | source | Run that first recorded this rejection. |
+| `raw_line_hash` | TEXT | yes | — | derived | Fingerprint of the original rejected line. |
+| `first_seen_run_id` | TEXT | yes | FK → `runs.run_id` | derived | Run that first recorded this rejection. |
 
 ## `review_decisions`
 
@@ -157,7 +158,7 @@
 
 | Column | SQLite type | Nullable | Key | Source or derived | Description |
 |---|---|---|---|---|---|
-| `pair_id` | TEXT | no | PK | source | Stable identity of the reviewed source-record pair. |
+| `pair_id` | TEXT | no | PK | derived | Stable identity of the reviewed source-record pair. |
 | `decision` | TEXT | no | — | source | Human decision for the pair. |
 | `reviewer` | TEXT | yes | — | source | Reviewer identifier, when supplied. |
 | `decided_at` | TEXT | yes | — | source | UTC time the decision was recorded. |

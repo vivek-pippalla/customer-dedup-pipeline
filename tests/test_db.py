@@ -58,8 +58,8 @@ def test_foreign_keys_and_status_checks_are_enforced() -> None:
         with pytest.raises(sqlite3.IntegrityError):
             conn.execute(
                 "INSERT INTO raw_customer_records "
-                "(version_id, source_record_id, row_hash, source_system, source_native_id, full_name, updated_at, first_seen_run_id) "
-                "VALUES ('v1', 's1', 'h1', 'UNKNOWN', 'n1', 'Name', '2025-01-01T00:00:00Z', ?) "
+                "(version_id, source_record_id, row_hash, source_system, source_system_key, source_native_id, full_name, updated_at, first_seen_run_id) "
+                "VALUES ('v1', 's1', 'h1', 'UNKNOWN', 'UNKNOWN', 'n1', 'Name', '2025-01-01T00:00:00Z', ?) "
                 "ON CONFLICT (version_id) DO NOTHING",
                 (run_id,),
             )
