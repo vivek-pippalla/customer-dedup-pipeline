@@ -9,10 +9,9 @@ from itertools import combinations
 from pathlib import Path
 from typing import Mapping
 
-from dedup.blocking import block_keys, build_blocks
-from dedup.classify import ClassifiedPair, classify_all
-from dedup.ids import pair_id
-from dedup.pipeline import current_versions
+from dedup.blocking import block_keys
+from dedup.classify import ClassifiedPair
+from dedup.pipeline import compute_all, current_versions
 
 
 LOGGER = logging.getLogger(__name__)
@@ -100,18 +99,23 @@ def evaluate_database(
     record_ids = {str(record["source_record_id"]) for record in records}
     records_by_id = {str(record["source_record_id"]): record for record in records}
     truth = _truth_pairs(truth_rows, record_ids)
+    computation = compute_all(conn, config)
     block_config = config.get("blocking", {})
     block_cap = int(block_config.get("block_cap", 200)) if isinstance(block_config, Mapping) else 200
-    candidate_pairs, blocking_stats = build_blocks(records, block_cap)
-    classified = classify_all(records, candidate_pairs, config)
-    by_pair = {tuple(sorted((item.source_record_id_a, item.source_record_id_b))): item for item in classified}
-    auto_pairs = {pair for pair, item in by_pair.items() if item.result.decision == "auto_merge"}
-    review_pairs = {pair for pair, item in by_pair.items() if item.result.decision == "review"}
-    candidate_set = set(candidate_pairs)
-    metrics = pairwise_metrics(truth, auto_pairs)
+    candidate_set = {tuple(sorted((item.source_record_id_a, item.source_record_id_b)))
+                     for item in computation.classified_pairs}
+    by_pair = {tuple(sorted((item.source_record_id_a, item.source_record_id_b))): item
+               for item in computation.classified_pairs}
+    auto_pairs = set(computation.auto_merge_pairs)
+    review_pairs = {tuple(sorted((item.source_record_id_a, item.source_record_id_b)))
+                    for item in computation.review_pairs}
+    final_pairs = {pair for cluster in computation.clusters for pair in combinations(cluster, 2)}
+    metrics = pairwise_metrics(truth, final_pairs)
+    auto_metrics = pairwise_metrics(truth, auto_pairs)
     true_auto = truth & auto_pairs
+    true_clusters = truth & final_pairs
     true_review = truth & review_pairs
-    missed = truth - auto_pairs - review_pairs
+    missed = truth - final_pairs - review_pairs
 
     key_members: dict[tuple[str, str], set[str]] = defaultdict(set)
     for record in records:
@@ -129,16 +133,25 @@ def evaluate_database(
     recall = float(metrics["recall"])
     f1 = float(metrics["f1"])
     blocking_recall = len(truth & candidate_set) / len(truth) if truth else 0.0
+    false_cluster_pairs = sorted(final_pairs - truth)
     return {
-        "label": "auto_merge pairs only (pre-clustering)",
+        "label": "final cluster pairs",
         "valid_source_records": len(record_ids),
         "true_duplicate_pairs": len(truth),
-        "auto_merge_pairs": len(auto_pairs),
+        "cluster_pairs": len(final_pairs),
         "precision": precision,
         "recall": recall,
         "f1": f1,
+        "auto_merge_pairs_only_pre_clustering": {
+            "label": "auto_merge pairs only (pre-clustering)",
+            "pair_count": len(auto_pairs),
+            "precision": auto_metrics["precision"],
+            "recall": auto_metrics["recall"],
+            "f1": auto_metrics["f1"],
+        },
         "blocking_recall": blocking_recall,
-        "true_pairs_found": {"auto_merge": len(true_auto), "review": len(true_review), "missed_entirely": len(missed)},
+        "true_pairs_found": {"auto_merge": len(true_auto), "final_clusters": len(true_clusters),
+                             "review": len(true_review), "missed_entirely": len(missed)},
         "review_queue_size": len(review_pairs),
         "miss_breakdown": {key: len(value) for key, value in misses.items()},
         "scored_non_match_details": misses["scored_non_match"],
@@ -147,6 +160,12 @@ def evaluate_database(
             for pair in false_auto[:20]
         ],
         "false_auto_merge_count": len(false_auto),
+        "false_cluster_pair_count": len(false_cluster_pairs),
+        "false_cluster_pairs": [
+            {"source_record_id_a": pair[0], "source_record_id_b": pair[1],
+             **(_feature_summary(by_pair[pair]) if pair in by_pair else {})}
+            for pair in false_cluster_pairs[:20]
+        ],
         "ground_truth_invalid_agreement": _reject_agreement(conn, truth_rows),
-        "blocking_stats": asdict(blocking_stats),
+        "blocking_stats": asdict(computation.blocking_stats),
     }

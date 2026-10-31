@@ -4,6 +4,7 @@ import hashlib
 import logging
 import sqlite3
 from collections import Counter
+from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Iterable, Mapping, Sequence
@@ -13,6 +14,10 @@ from dedup.classify import ClassifiedPair, classify_all as classify_candidates
 from dedup.ingest import BatchRead, RawRow, compute_keys, insert_versions, read_batch
 from dedup.normalize import normalize_row
 from dedup.validate import validate_rows
+from dedup.blocking import BlockingStats, build_blocks
+from dedup.cluster import build_clusters, check_clusters
+from dedup.classify import Decision
+from dedup.survivorship import GoldenRecord, build_golden
 
 
 LOGGER = logging.getLogger(__name__)
@@ -27,7 +32,8 @@ def current_versions(conn: sqlite3.Connection) -> list[dict[str, object]]:
     """Select one deterministic current clean version per source record."""
     rows = conn.execute(
         "WITH ranked AS ("
-        " SELECT c.*, r.row_hash, ROW_NUMBER() OVER ("
+        " SELECT c.*, r.row_hash, r.source_system, r.full_name, r.email, r.phone, r.address, r.postcode, r.dob, "
+        " ROW_NUMBER() OVER ("
         "  PARTITION BY c.source_record_id ORDER BY c.updated_at_utc DESC, r.row_hash ASC"
         " ) AS version_rank FROM clean_customers c"
         " JOIN raw_customer_records r ON r.version_id = c.version_id"
@@ -41,6 +47,86 @@ def classify_all(
 ) -> list[ClassifiedPair]:
     """Pipeline entry point for deterministic candidate scoring and classification."""
     return classify_candidates(records, pairs, config)
+
+
+@dataclass(frozen=True)
+class ComputeResult:
+    """Complete in-memory matching, clustering, and survivorship output."""
+    golden_records: tuple[GoldenRecord, ...]
+    members: tuple[dict[str, str], ...]
+    lineage_rows: tuple[dict[str, object], ...]
+    candidate_pairs: tuple[ClassifiedPair, ...]
+    review_pairs: tuple[ClassifiedPair, ...]
+    clusters: tuple[tuple[str, ...], ...]
+    auto_merge_pairs: tuple[tuple[str, str], ...]
+    classified_pairs: tuple[ClassifiedPair, ...]
+    blocking_stats: BlockingStats
+    counts: Mapping[str, int]
+
+
+def compute_all(conn: sqlite3.Connection, config: Mapping[str, object]) -> ComputeResult:
+    """Compute current versions, candidates, decisions, clusters and golden rows in memory."""
+    records = current_versions(conn)
+    blocking_config = config.get("blocking", {})
+    cap = int(blocking_config.get("block_cap", 200)) if isinstance(blocking_config, Mapping) else 200
+    pairs, stats = build_blocks(records, cap)
+    classified = classify_all(records, pairs, config)
+    auto_pairs = sorted({tuple(sorted((pair.source_record_id_a, pair.source_record_id_b)))
+                         for pair in classified if pair.result.decision == "auto_merge"})
+    by_id = {str(record["source_record_id"]): record for record in records}
+    initial_clusters = build_clusters(list(by_id), auto_pairs)
+    clusters, demoted = check_clusters(initial_clusters, by_id)
+
+    demoted_scored = classify_all(records, demoted, config) if demoted else []
+    merged: dict[tuple[str, str], ClassifiedPair] = {
+        tuple(sorted((pair.source_record_id_a, pair.source_record_id_b))): pair for pair in classified
+    }
+    for pair in demoted_scored:
+        key = tuple(sorted((pair.source_record_id_a, pair.source_record_id_b)))
+        merged[key] = ClassifiedPair(pair.pair_id, pair.source_record_id_a, pair.source_record_id_b,
+                                     pair.features, Decision("review", "transitive_conflict", None))
+    all_classified = [merged[key] for key in sorted(merged)]
+    candidate_pairs = tuple(pair for pair in all_classified if pair.result.decision in {"auto_merge", "review"})
+    review_pairs = tuple(pair for pair in candidate_pairs if pair.result.decision == "review")
+
+    golden_records: list[GoldenRecord] = []
+    members: list[dict[str, str]] = []
+    lineage_rows: list[dict[str, object]] = []
+    edge_tier_by_pair = {
+        tuple(sorted((pair.source_record_id_a, pair.source_record_id_b))): pair.result.match_tier
+        for pair in classified if pair.result.decision == "auto_merge"
+    }
+    priority = config.get("source_priority", {})
+    if not isinstance(priority, Mapping):
+        raise ValueError("config source_priority must be a table")
+    for cluster in clusters:
+        member_set = set(cluster)
+        edge_tiers = [tier or "probable" for pair, tier in edge_tier_by_pair.items()
+                      if pair[0] in member_set and pair[1] in member_set]
+        golden = build_golden(cluster, by_id, priority, edge_tiers)
+        golden_records.append(golden)
+        for member in golden.members:
+            members.append({"golden_id": golden.golden_id, "source_record_id": member.source_record_id,
+                            "version_id": member.version_id})
+        for line in golden.lineage:
+            lineage_rows.append({"golden_id": golden.golden_id, "field_name": line.field_name,
+                                 "value": line.value, "version_id": line.version_id,
+                                 "source_record_id": line.source_record_id, "source_system": line.source_system,
+                                 "rule_applied": line.rule_applied})
+    golden_records.sort(key=lambda record: record.golden_id)
+    members.sort(key=lambda row: (row["golden_id"], row["source_record_id"]))
+    lineage_rows.sort(key=lambda row: (str(row["golden_id"]), str(row["field_name"])))
+    counts = {
+        "unique_source_records": len(by_id),
+        "golden_records": len(golden_records),
+        "merged_away": len(by_id) - len(golden_records),
+        "records_in_merged_clusters": sum(len(cluster) for cluster in clusters if len(cluster) >= 2),
+        "review_pending": len(review_pairs),
+        "records_in_pending_review": len({identifier for pair in review_pairs
+                                          for identifier in (pair.source_record_id_a, pair.source_record_id_b)}),
+    }
+    return ComputeResult(tuple(golden_records), tuple(members), tuple(lineage_rows), candidate_pairs,
+                         review_pairs, tuple(clusters), tuple(auto_pairs), tuple(all_classified), stats, counts)
 
 
 def _config_value(config: Mapping[str, object], section: str, key: str, default: object) -> object:
