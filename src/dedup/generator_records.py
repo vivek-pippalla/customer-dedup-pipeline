@@ -169,16 +169,40 @@ def make_records(rows: int, seed_rng: random.Random, dup_rate: float, family_rat
     """Create exactly the requested number of noisy valid base rows."""
     profiles: list[_Profile] = []
     records: list[GeneratedRecord] = []
+    # A Fenwick tree preserves the old ordered eligible-profile choice while
+    # avoiding a full scan of every profile for every generated row.
+    eligible_tree = [0] * (rows + 1)
+    eligible_count = 0
+
+    def update_eligibility(profile_number: int, delta: int) -> None:
+        nonlocal eligible_count
+        eligible_count += delta
+        index = profile_number
+        while index <= rows:
+            eligible_tree[index] += delta
+            index += index & -index
+
+    def eligible_at(rank: int) -> _Profile:
+        index = 0
+        bit = 1 << (rows.bit_length() - 1)
+        while bit:
+            candidate = index + bit
+            if candidate <= rows and eligible_tree[candidate] <= rank:
+                rank -= eligible_tree[candidate]
+                index = candidate
+            bit >>= 1
+        return profiles[index]
+
     for index in range(rows):
-        eligible = [profile for profile in profiles if len(profile.records) < 4]
         force_late = index == 1 and late_rate > 0 and bool(profiles)
         if force_late:
             profile = profiles[0]
-        elif eligible and seed_rng.random() < dup_rate:
-            profile = seed_rng.choice(eligible)
+        elif eligible_count and seed_rng.random() < dup_rate:
+            profile = eligible_at(seed_rng.randrange(eligible_count))
         else:
             profile = _new_profile(seed_rng, len(profiles) + 1, profiles, family_rate)
             profiles.append(profile)
+            update_eligibility(profile.number, 1)
 
         late = force_late or (
             len(profile.records) > 0
@@ -201,6 +225,8 @@ def make_records(rows: int, seed_rng: random.Random, dup_rate: float, family_rat
         record = GeneratedRecord(fields, f"entity_{profile.number:05d}", issue, late_old=late)
         records.append(record)
         profile.records.append(record)
+        if len(profile.records) == 4:
+            update_eligibility(profile.number, -1)
 
     if records:
         records[0].fields[4] = ""

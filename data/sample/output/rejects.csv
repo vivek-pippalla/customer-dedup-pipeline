@@ -1,0 +1,15 @@
+reject_id,source_file,source_row_number,reason_code,raw_line,raw_line_hash
+1,customers_sample.csv,5,duplicate_key,"CRM,crm-000002,John Perry Duplicate,olivia.edwards.00003@example.com,+91 94627-04828,""223 Clover Road, Jaipur"",302001,1990-05-27,2023-11-27T07:17:31Z
+",0bfc8938b5b07e61
+2,customers_sample.csv,12,invalid_email,"IMPORT,import-000009,Ibrahim Watson,not-an-email,93375 43303,""85 Meadow Rd, Bengaluru"",560001,,2024-11-06T01:42:40Z
+",a268b59f5919a3e9
+3,customers_sample.csv,26,missing_required,"CRM,crm-000017,,michael.turner.00017@example.com,92787 42967,,500001,,2024-09-19T20:44:17Z
+",16428f386c037f26
+4,customers_sample.csv,27,invalid_timestamp,"CRM,crm-000018,Jane Smith,joseph.phillips.00014@example.com,+91 94824-77109,""182 Hill Rd, Bengaluru"",560001,1960-05-18,not-a-timestamp
+",078f9c0a5b3c48cc
+5,customers_sample.csv,39,invalid_source_system,"UNKNOWN,web-000028,F Carter,fatima.carter.00028@example.net,95991 02290,""70 Cedar Road, Kochi"",,1978-11-14,2025-07-20T00:27:14Z
+",ed61096bb148eb3e
+6,customers_sample.csv,50,future_timestamp,"IMPORT,import-000029,""WALKER, JON"",john.walker.00029@example.com,9613696816,""191 Lake Road, Kochi"",682001,1971-04-11,2099-01-01T00:00:00Z
+",4f536a775251ae9d
+7,customers_sample.csv,42,malformed_row,"CRM,crm-000030,ZARA WHITE,,+91 95271-77449,""91 Birch Road, Pune"",411001,1982-02-10
+",5fae1caf2f81da34

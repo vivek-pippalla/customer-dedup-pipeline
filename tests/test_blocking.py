@@ -40,3 +40,12 @@ def test_oversized_blocks_report_skipped_pairs_and_reduction():
     assert simple_stats.comparisons_blocked == 1
     assert abs(simple_stats.reduction_ratio - 2 / 3) < 1e-12
 
+
+def test_generated_scale_records_do_not_create_quadratic_candidates():
+    rows = [rec(f"record-{index:04d}", email_norm=f"person-{index}@example.test")
+            for index in range(3000)]
+    pairs, stats = build_blocks(rows, 200)
+    assert pairs == []
+    assert stats.comparisons_naive == 3000 * 2999 // 2
+    assert stats.comparisons_blocked == 0
+

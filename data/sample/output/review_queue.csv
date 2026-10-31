@@ -1,0 +1,3 @@
+pair_id,score,reason_code,status
+2e7c96224b7bbfef,0.40073457008940877,dob_conflict,pending
+cab8bee2e5b27f1b,0.9884615384615384,shared_identifier_conflict,pending

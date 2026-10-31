@@ -4,8 +4,9 @@ import hashlib
 import logging
 import sqlite3
 import json
+import time
 from collections import Counter
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Iterable, Mapping, Sequence
@@ -72,22 +73,32 @@ class ComputeResult:
     classified_pairs: tuple[ClassifiedPair, ...]
     blocking_stats: BlockingStats
     counts: Mapping[str, int]
+    stage_timings: Mapping[str, float] = field(default_factory=dict)
 
 
 def compute_all(conn: sqlite3.Connection, config: Mapping[str, object]) -> ComputeResult:
     """Compute current versions, candidates, decisions, clusters and golden rows in memory."""
+    stage_timings: dict[str, float] = {}
     records = current_versions(conn)
     blocking_config = config.get("blocking", {})
     cap = int(blocking_config.get("block_cap", 200)) if isinstance(blocking_config, Mapping) else 200
+    phase_start = time.perf_counter()
     pairs, stats = build_blocks(records, cap)
+    stage_timings["blocking_seconds"] = time.perf_counter() - phase_start
+    phase_start = time.perf_counter()
     classified = classify_all(records, pairs, config)
+    scoring_classification_seconds = time.perf_counter() - phase_start
     auto_pairs = sorted({tuple(sorted((pair.source_record_id_a, pair.source_record_id_b)))
                          for pair in classified if pair.result.decision == "auto_merge"})
     by_id = {str(record["source_record_id"]): record for record in records}
+    phase_start = time.perf_counter()
     initial_clusters = build_clusters(list(by_id), auto_pairs)
     clusters, demoted = check_clusters(initial_clusters, by_id)
+    stage_timings["clustering_seconds"] = time.perf_counter() - phase_start
 
+    phase_start = time.perf_counter()
     demoted_scored = classify_all(records, demoted, config) if demoted else []
+    stage_timings["scoring_classification_seconds"] = scoring_classification_seconds + time.perf_counter() - phase_start
     merged: dict[tuple[str, str], ClassifiedPair] = {
         tuple(sorted((pair.source_record_id_a, pair.source_record_id_b))): pair for pair in classified
     }
@@ -99,6 +110,7 @@ def compute_all(conn: sqlite3.Connection, config: Mapping[str, object]) -> Compu
     candidate_pairs = tuple(pair for pair in all_classified if pair.result.decision in {"auto_merge", "review"})
     review_pairs = tuple(pair for pair in candidate_pairs if pair.result.decision == "review")
 
+    phase_start = time.perf_counter()
     golden_records: list[GoldenRecord] = []
     members: list[dict[str, str]] = []
     lineage_rows: list[dict[str, object]] = []
@@ -135,8 +147,10 @@ def compute_all(conn: sqlite3.Connection, config: Mapping[str, object]) -> Compu
         "records_in_pending_review": len({identifier for pair in review_pairs
                                           for identifier in (pair.source_record_id_a, pair.source_record_id_b)}),
     }
+    stage_timings["survivorship_lineage_seconds"] = time.perf_counter() - phase_start
     return ComputeResult(tuple(golden_records), tuple(members), tuple(lineage_rows), candidate_pairs,
-                         review_pairs, tuple(clusters), tuple(auto_pairs), tuple(all_classified), stats, counts)
+                         review_pairs, tuple(clusters), tuple(auto_pairs), tuple(all_classified), stats, counts,
+                         stage_timings)
 
 
 def run_pipeline(
@@ -149,6 +163,7 @@ def run_pipeline(
 
     from dedup.publish import publish
 
+    total_start = time.perf_counter()
     started = started_at or _utc_now_iso()
     reference_time = as_of or started
     input_files = [str(path) for path in paths]
@@ -159,10 +174,13 @@ def run_pipeline(
                            config_snapshot=snapshot)
     stage_counts: dict[str, int] = {}
     metrics: dict[str, object] = {}
+    stage_timings: dict[str, float] = {}
     error_message: str | None = None
     try:
         LOGGER.info("stage 1 ingest started run_id=%s files=%s", identifier, len(input_files))
+        phase_start = time.perf_counter()
         staged = stage1_ingest(conn, paths, config, {"run_id": identifier, "started_at": started, "as_of": reference_time})
+        stage_timings["stage1_ingest_validate_normalize_seconds"] = time.perf_counter() - phase_start
         stage_counts = {key: int(staged.get(key, 0)) for key in (
             "input_rows", "rejected_rows", "valid_rows", "new_version_rows", "duplicate_event_rows")}
         metrics.update(staged.get("metrics", {}))
@@ -170,13 +188,23 @@ def run_pipeline(
             LOGGER.warning("run_id=%s %s", identifier, warning)
         LOGGER.info("stage 1 ingest finished run_id=%s counts=%s", identifier, stage_counts)
         if staged["status"] == "failed":
+            stage_timings["total_seconds"] = time.perf_counter() - total_start
+            metrics["stage_timings"] = stage_timings
             raise PipelineRunError(identifier, str(staged["error"]))
         if staged["status"] == "success_empty":
+            stage_timings["total_seconds"] = time.perf_counter() - total_start
+            metrics["stage_timings"] = stage_timings
             finish_run(conn, identifier, "success_empty", stage_counts, metrics, None)
             return {"run_id": identifier, "status": "success_empty", "counts": stage_counts, "metrics": metrics}
 
         LOGGER.info("stage 2 compute started run_id=%s", identifier)
+        compute_start = time.perf_counter()
         computed = compute_all(conn, config)
+        compute_timings = dict(computed.stage_timings)
+        stage_timings.update(compute_timings)
+        stage_timings["compute_setup_seconds"] = max(
+            0.0, time.perf_counter() - compute_start - sum(compute_timings.values())
+        )
         decision_counts = Counter(pair.result.decision for pair in computed.classified_pairs)
         metrics.update({
             "blocking_stats": asdict(computed.blocking_stats),
@@ -189,13 +217,17 @@ def run_pipeline(
         for column in COUNT_COLUMNS:
             complete_counts.setdefault(column, 0)
         LOGGER.info("stage 3 publish started run_id=%s candidates=%s", identifier, len(computed.candidate_pairs))
+        publish_start = time.perf_counter()
         reconciliation = publish(
             conn, computed, identifier, fault_hook=fault_hook,
             input_counts=stage_counts,
             rejects_by_reason=metrics.get("rejects_by_reason", {}),
         )
+        stage_timings["publish_seconds"] = time.perf_counter() - publish_start
         metrics["reconciliation"] = reconciliation
         LOGGER.info("stage 3 publish finished run_id=%s counts=%s", identifier, computed.counts)
+        stage_timings["total_seconds"] = time.perf_counter() - total_start
+        metrics["stage_timings"] = stage_timings
         finish_run(conn, identifier, "success", complete_counts, metrics, None)
         return {"run_id": identifier, "status": "success", "counts": complete_counts, "metrics": metrics,
                 "compute_result": computed}
@@ -204,6 +236,8 @@ def run_pipeline(
             conn.rollback()
         error_message = str(error)
         metrics["error"] = error_message
+        stage_timings["total_seconds"] = time.perf_counter() - total_start
+        metrics["stage_timings"] = stage_timings
         LOGGER.exception("pipeline run failed run_id=%s", identifier)
         try:
             failed_counts = {column: stage_counts.get(column, 0) for column in COUNT_COLUMNS}

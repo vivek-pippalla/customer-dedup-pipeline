@@ -1,0 +1,193 @@
+golden_id,field_name,value,version_id,source_record_id,source_system,rule_applied
+g_023308b11c4f4cd2,address,"93 Ashoka Rd, Bhopal",6e594fab86fa8346,fec63928e7654ecf,WEB,tie_break_smallest_id
+g_023308b11c4f4cd2,dob,1969-03-07,6e594fab86fa8346,fec63928e7654ecf,WEB,majority_value
+g_023308b11c4f4cd2,email,liz.shah.00032@example.net,6e594fab86fa8346,fec63928e7654ecf,WEB,tie_break_smallest_id
+g_023308b11c4f4cd2,full_name,Liz Shah,6e594fab86fa8346,fec63928e7654ecf,WEB,tie_break_smallest_id
+g_023308b11c4f4cd2,phone,98652 81685,6e594fab86fa8346,fec63928e7654ecf,WEB,tie_break_smallest_id
+g_023308b11c4f4cd2,postcode,,,,,no_value
+g_0438df88e6dcccd6,address,"58 Station Road, Pune",c03e510e0eb2b8f7,d4d0090696960bb1,IMPORT,tie_break_smallest_id
+g_0438df88e6dcccd6,dob,2001-07-28,c03e510e0eb2b8f7,d4d0090696960bb1,IMPORT,majority_value
+g_0438df88e6dcccd6,email,,,,,no_value
+g_0438df88e6dcccd6,full_name,"Bell, Grace",c03e510e0eb2b8f7,d4d0090696960bb1,IMPORT,tie_break_smallest_id
+g_0438df88e6dcccd6,phone,,,,,no_value
+g_0438df88e6dcccd6,postcode,411001,c03e510e0eb2b8f7,d4d0090696960bb1,IMPORT,follows_address_winner
+g_0453183dd0080e4a,address,"56 Lake Rd, Kolkata",53c47ef8ecb75826,288dd648eca9cf34,CRM,tie_break_smallest_id
+g_0453183dd0080e4a,dob,1953-10-24,53c47ef8ecb75826,288dd648eca9cf34,CRM,majority_value
+g_0453183dd0080e4a,email,aisha.carter.00006@example.com,53c47ef8ecb75826,288dd648eca9cf34,CRM,source_priority
+g_0453183dd0080e4a,full_name,Aisha Carter,53c47ef8ecb75826,288dd648eca9cf34,CRM,source_priority
+g_0453183dd0080e4a,phone,09647468723,53c47ef8ecb75826,288dd648eca9cf34,CRM,tie_break_smallest_id
+g_0453183dd0080e4a,postcode,700001,53c47ef8ecb75826,288dd648eca9cf34,CRM,follows_address_winner
+g_11bb4e75ca12b112,address,"191 Lake Road, Kochi",e10c62809df9a20d,c326df9db8c78954,CRM,tie_break_smallest_id
+g_11bb4e75ca12b112,dob,1971-04-11,e10c62809df9a20d,c326df9db8c78954,CRM,majority_value
+g_11bb4e75ca12b112,email,john.walker.00029@example.com,e10c62809df9a20d,c326df9db8c78954,CRM,tie_break_smallest_id
+g_11bb4e75ca12b112,full_name,John Walker,e10c62809df9a20d,c326df9db8c78954,CRM,tie_break_smallest_id
+g_11bb4e75ca12b112,phone,96136 96816,e10c62809df9a20d,c326df9db8c78954,CRM,tie_break_smallest_id
+g_11bb4e75ca12b112,postcode,682001,e10c62809df9a20d,c326df9db8c78954,CRM,follows_address_winner
+g_12ca67b2e36a30b0,address,"60 Elm Road, Hyderabad",612fdb9524e98233,d9877b322ef8bc9f,CRM,latest_updated_at
+g_12ca67b2e36a30b0,dob,1974-12-05,612fdb9524e98233,d9877b322ef8bc9f,CRM,majority_value
+g_12ca67b2e36a30b0,email,maggie.das.00012@mail.invalid,612fdb9524e98233,d9877b322ef8bc9f,CRM,source_priority
+g_12ca67b2e36a30b0,full_name,Maggie Das,612fdb9524e98233,d9877b322ef8bc9f,CRM,source_priority
+g_12ca67b2e36a30b0,phone,+91 91434-55812,612fdb9524e98233,d9877b322ef8bc9f,CRM,latest_updated_at
+g_12ca67b2e36a30b0,postcode,500001,612fdb9524e98233,d9877b322ef8bc9f,CRM,follows_address_winner
+g_18b946b1d8374b46,address,"87 Jasmine Road, Chandigarh",965c74414fa22f1f,59a088d5e9354c59,WEB,tie_break_smallest_id
+g_18b946b1d8374b46,dob,1989-12-13,965c74414fa22f1f,59a088d5e9354c59,WEB,majority_value
+g_18b946b1d8374b46,email,fatima.watson.00020@mail.invalid,965c74414fa22f1f,59a088d5e9354c59,WEB,tie_break_smallest_id
+g_18b946b1d8374b46,full_name,Fatima Watson,965c74414fa22f1f,59a088d5e9354c59,WEB,tie_break_smallest_id
+g_18b946b1d8374b46,phone,91870 26217,965c74414fa22f1f,59a088d5e9354c59,WEB,tie_break_smallest_id
+g_18b946b1d8374b46,postcode,160017,965c74414fa22f1f,59a088d5e9354c59,WEB,follows_address_winner
+g_32408f812c0c85a3,address,"109 River Road, Mysuru",a04a1003f668efe8,728246bc31def654,CRM,tie_break_smallest_id
+g_32408f812c0c85a3,dob,1957-05-08,a04a1003f668efe8,728246bc31def654,CRM,majority_value
+g_32408f812c0c85a3,email,andrew.smith.00034@mail.invalid,a04a1003f668efe8,728246bc31def654,CRM,tie_break_smallest_id
+g_32408f812c0c85a3,full_name,A Smith,a04a1003f668efe8,728246bc31def654,CRM,tie_break_smallest_id
+g_32408f812c0c85a3,phone,+91 99010-43289,a04a1003f668efe8,728246bc31def654,CRM,tie_break_smallest_id
+g_32408f812c0c85a3,postcode,570001,a04a1003f668efe8,728246bc31def654,CRM,follows_address_winner
+g_381d5d22664e42a5,address,,,,,no_value
+g_381d5d22664e42a5,dob,1950-06-25,f7bf9b280394648d,fbb648e831a08ce8,WEB,majority_value
+g_381d5d22664e42a5,email,anika.edwards.00008@example.org,f7bf9b280394648d,fbb648e831a08ce8,WEB,tie_break_smallest_id
+g_381d5d22664e42a5,full_name,Anika Edwards,f7bf9b280394648d,fbb648e831a08ce8,WEB,tie_break_smallest_id
+g_381d5d22664e42a5,phone,+91 95348-74016,f7bf9b280394648d,fbb648e831a08ce8,WEB,tie_break_smallest_id
+g_381d5d22664e42a5,postcode,452001,f7bf9b280394648d,fbb648e831a08ce8,WEB,tie_break_smallest_id
+g_3be85bc94157f235,address,"13 Oak Road, Kolkata",0d99e67bd74b8de5,f00e89bf7e6a89c5,CRM,tie_break_smallest_id
+g_3be85bc94157f235,dob,1985-04-28,0d99e67bd74b8de5,f00e89bf7e6a89c5,CRM,majority_value
+g_3be85bc94157f235,email,kavya.collins.00011@mail.invalid,0d99e67bd74b8de5,f00e89bf7e6a89c5,CRM,tie_break_smallest_id
+g_3be85bc94157f235,full_name,Kavya Collins,0d99e67bd74b8de5,f00e89bf7e6a89c5,CRM,tie_break_smallest_id
+g_3be85bc94157f235,phone,96320 16328,0d99e67bd74b8de5,f00e89bf7e6a89c5,CRM,tie_break_smallest_id
+g_3be85bc94157f235,postcode,700001,0d99e67bd74b8de5,f00e89bf7e6a89c5,CRM,follows_address_winner
+g_425d0b1016192914,address,"98 River Road, Pune",054ea28bed424595,9eb88bf3ef75915c,WEB,tie_break_smallest_id
+g_425d0b1016192914,dob,,,,,no_value
+g_425d0b1016192914,email,anika.campbell.00015@example.net,054ea28bed424595,9eb88bf3ef75915c,WEB,tie_break_smallest_id
+g_425d0b1016192914,full_name,"Campbell, Anika",054ea28bed424595,9eb88bf3ef75915c,WEB,tie_break_smallest_id
+g_425d0b1016192914,phone,+91 91318-69993,054ea28bed424595,9eb88bf3ef75915c,WEB,tie_break_smallest_id
+g_425d0b1016192914,postcode,411001,054ea28bed424595,9eb88bf3ef75915c,WEB,follows_address_winner
+g_49b649570518e71e,address,"113 Market Road, Mysuru",31a446c261070ca1,c395952124b98ef4,IMPORT,tie_break_smallest_id
+g_49b649570518e71e,dob,1983-08-04,e03645c58b14863b,bb99cea158b0879e,CRM,majority_value
+g_49b649570518e71e,email,andrew.price.00004@example.org,e03645c58b14863b,bb99cea158b0879e,CRM,source_priority
+g_49b649570518e71e,full_name,Andrew Price,e03645c58b14863b,bb99cea158b0879e,CRM,source_priority
+g_49b649570518e71e,phone,09489638346,31a446c261070ca1,c395952124b98ef4,IMPORT,tie_break_smallest_id
+g_49b649570518e71e,postcode,570001,31a446c261070ca1,c395952124b98ef4,IMPORT,follows_address_winner
+g_544f0b18d1ebfd79,address,"145 MG Road, Ahmedabad",723c7006f1b69613,6ff75feb30bdfb3d,IMPORT,tie_break_smallest_id
+g_544f0b18d1ebfd79,dob,1993-03-06,723c7006f1b69613,6ff75feb30bdfb3d,IMPORT,majority_value
+g_544f0b18d1ebfd79,email,mike.foster.00021@example.com,723c7006f1b69613,6ff75feb30bdfb3d,IMPORT,tie_break_smallest_id
+g_544f0b18d1ebfd79,full_name,Mike Foster,723c7006f1b69613,6ff75feb30bdfb3d,IMPORT,tie_break_smallest_id
+g_544f0b18d1ebfd79,phone,09504556238,723c7006f1b69613,6ff75feb30bdfb3d,IMPORT,tie_break_smallest_id
+g_544f0b18d1ebfd79,postcode,380001,723c7006f1b69613,6ff75feb30bdfb3d,IMPORT,follows_address_winner
+g_563543a289a0d4f1,address,"94 Station Road, Kochi",c3a1e34c9724d6d7,7c31a8cf5eba8571,WEB,tie_break_smallest_id
+g_563543a289a0d4f1,dob,1996-03-03,c3a1e34c9724d6d7,7c31a8cf5eba8571,WEB,majority_value
+g_563543a289a0d4f1,email,bill.murphy.00022@example.org,c3a1e34c9724d6d7,7c31a8cf5eba8571,WEB,tie_break_smallest_id
+g_563543a289a0d4f1,full_name,Bill Murphy,c3a1e34c9724d6d7,7c31a8cf5eba8571,WEB,tie_break_smallest_id
+g_563543a289a0d4f1,phone,93942 10470,c3a1e34c9724d6d7,7c31a8cf5eba8571,WEB,tie_break_smallest_id
+g_563543a289a0d4f1,postcode,682001,c3a1e34c9724d6d7,7c31a8cf5eba8571,WEB,follows_address_winner
+g_5ff07cecfbe7bae5,address,,,,,no_value
+g_5ff07cecfbe7bae5,dob,1975-12-15,4b3169a63433bccb,f3bc145526ee73a1,WEB,majority_value
+g_5ff07cecfbe7bae5,email,joseph.jackson.00036@mail.invalid,4b3169a63433bccb,f3bc145526ee73a1,WEB,tie_break_smallest_id
+g_5ff07cecfbe7bae5,full_name,Joseph Jackson,4b3169a63433bccb,f3bc145526ee73a1,WEB,tie_break_smallest_id
+g_5ff07cecfbe7bae5,phone,94034 50541,4b3169a63433bccb,f3bc145526ee73a1,WEB,tie_break_smallest_id
+g_5ff07cecfbe7bae5,postcode,800001,4b3169a63433bccb,f3bc145526ee73a1,WEB,tie_break_smallest_id
+g_6305bbb49723bb10,address,"167 River Road, Jaipur",9650f55be562db7b,19994e5f4adc9049,WEB,tie_break_smallest_id
+g_6305bbb49723bb10,dob,1967-10-26,9650f55be562db7b,19994e5f4adc9049,WEB,majority_value
+g_6305bbb49723bb10,email,joseph.phillips.00014@example.com,9650f55be562db7b,19994e5f4adc9049,WEB,tie_break_smallest_id
+g_6305bbb49723bb10,full_name,Joseph Phillips,9650f55be562db7b,19994e5f4adc9049,WEB,tie_break_smallest_id
+g_6305bbb49723bb10,phone,96716 57262,9650f55be562db7b,19994e5f4adc9049,WEB,tie_break_smallest_id
+g_6305bbb49723bb10,postcode,302001,9650f55be562db7b,19994e5f4adc9049,WEB,follows_address_winner
+g_63ca4b4ca944f585,address,"29 Fern Road, Delhi",e3218acc7e52b841,3b83a7f6463d3437,CRM,tie_break_smallest_id
+g_63ca4b4ca944f585,dob,1992-01-05,e3218acc7e52b841,3b83a7f6463d3437,CRM,majority_value
+g_63ca4b4ca944f585,email,benjamin.morgan.00025@example.org,e3218acc7e52b841,3b83a7f6463d3437,CRM,tie_break_smallest_id
+g_63ca4b4ca944f585,full_name,BENJAMIN MORGAN,e3218acc7e52b841,3b83a7f6463d3437,CRM,tie_break_smallest_id
+g_63ca4b4ca944f585,phone,9534874016,e3218acc7e52b841,3b83a7f6463d3437,CRM,tie_break_smallest_id
+g_63ca4b4ca944f585,postcode,110001,e3218acc7e52b841,3b83a7f6463d3437,CRM,follows_address_winner
+g_7ebb9a5f7cc95107,address,"120 Maple Road, Coimbatore",1279cdfa8d22ca66,c9d09a67267c0c56,CRM,latest_updated_at
+g_7ebb9a5f7cc95107,dob,1978-08-22,1279cdfa8d22ca66,c9d09a67267c0c56,CRM,majority_value
+g_7ebb9a5f7cc95107,email,ibrahim.reed.00010@example.net,1279cdfa8d22ca66,c9d09a67267c0c56,CRM,source_priority
+g_7ebb9a5f7cc95107,full_name,Ibrahim Reed,1279cdfa8d22ca66,c9d09a67267c0c56,CRM,source_priority
+g_7ebb9a5f7cc95107,phone,96804 43699,1279cdfa8d22ca66,c9d09a67267c0c56,CRM,latest_updated_at
+g_7ebb9a5f7cc95107,postcode,641001,1279cdfa8d22ca66,c9d09a67267c0c56,CRM,follows_address_winner
+g_83eae86588623479,address,"16 Cedar Road, Guwahati",4f631fb788b30ceb,9c7733308fd43127,CRM,tie_break_smallest_id
+g_83eae86588623479,dob,1960-05-20,4f631fb788b30ceb,9c7733308fd43127,CRM,majority_value
+g_83eae86588623479,email,AKASH.REED.00016@EXAMPLE.NET,4f631fb788b30ceb,9c7733308fd43127,CRM,tie_break_smallest_id
+g_83eae86588623479,full_name,Akash Reed,4f631fb788b30ceb,9c7733308fd43127,CRM,tie_break_smallest_id
+g_83eae86588623479,phone,,,,,no_value
+g_83eae86588623479,postcode,781001,4f631fb788b30ceb,9c7733308fd43127,CRM,follows_address_winner
+g_8931d96f68fbc6b8,address,"223 Clover Road, Jaipur",b73c8056e8789988,1652538ccf64a38f,CRM,tie_break_smallest_id
+g_8931d96f68fbc6b8,dob,1990-05-27,b73c8056e8789988,1652538ccf64a38f,CRM,majority_value
+g_8931d96f68fbc6b8,email,olivia.edwards.00003@example.com,b73c8056e8789988,1652538ccf64a38f,CRM,tie_break_smallest_id
+g_8931d96f68fbc6b8,full_name,"Edwards, Olivia",b73c8056e8789988,1652538ccf64a38f,CRM,tie_break_smallest_id
+g_8931d96f68fbc6b8,phone,09462704828,b73c8056e8789988,1652538ccf64a38f,CRM,tie_break_smallest_id
+g_8931d96f68fbc6b8,postcode,302001,b73c8056e8789988,1652538ccf64a38f,CRM,follows_address_winner
+g_89349679981d8c86,address,"24 Ashoka Road, Ahmedabad",f096d58a1201ff0c,1b46c54ef064528a,IMPORT,latest_updated_at
+g_89349679981d8c86,dob,1963-04-17,5a99355c4d4697c8,04f2f696bb375a9a,WEB,majority_value
+g_89349679981d8c86,email,MAGGIE.BENNETT.00001@EXAMPLE.NET,5a99355c4d4697c8,04f2f696bb375a9a,WEB,source_priority
+g_89349679981d8c86,full_name,Maggie Bennett,5a99355c4d4697c8,04f2f696bb375a9a,WEB,source_priority
+g_89349679981d8c86,phone,09332181960,5a99355c4d4697c8,04f2f696bb375a9a,WEB,tie_break_smallest_id
+g_89349679981d8c86,postcode,380001,f096d58a1201ff0c,1b46c54ef064528a,IMPORT,follows_address_winner
+g_8b8c9528e6df3bc3,address,"163 Willow Rd, Chandigarh",21bf3600ca6e379c,b0bafeea67e56e29,IMPORT,tie_break_smallest_id
+g_8b8c9528e6df3bc3,dob,1987-09-23,21bf3600ca6e379c,b0bafeea67e56e29,IMPORT,majority_value
+g_8b8c9528e6df3bc3,email,james.reed.00026@mail.invalid,21bf3600ca6e379c,b0bafeea67e56e29,IMPORT,tie_break_smallest_id
+g_8b8c9528e6df3bc3,full_name,James Reed,21bf3600ca6e379c,b0bafeea67e56e29,IMPORT,tie_break_smallest_id
+g_8b8c9528e6df3bc3,phone,+91 97115-92124,21bf3600ca6e379c,b0bafeea67e56e29,IMPORT,tie_break_smallest_id
+g_8b8c9528e6df3bc3,postcode,160017,21bf3600ca6e379c,b0bafeea67e56e29,IMPORT,follows_address_winner
+g_97106aa6f73e1838,address,"235 Market Road, Bhopal",c1971734d4b56f86,bccf486a86dc7ef7,IMPORT,tie_break_smallest_id
+g_97106aa6f73e1838,dob,1968-07-14,c1971734d4b56f86,bccf486a86dc7ef7,IMPORT,majority_value
+g_97106aa6f73e1838,email,fatima.shah.00031@example.org,c1971734d4b56f86,bccf486a86dc7ef7,IMPORT,tie_break_smallest_id
+g_97106aa6f73e1838,full_name,Fatima Shah,c1971734d4b56f86,bccf486a86dc7ef7,IMPORT,tie_break_smallest_id
+g_97106aa6f73e1838,phone,+91 90377-88925,c1971734d4b56f86,bccf486a86dc7ef7,IMPORT,tie_break_smallest_id
+g_97106aa6f73e1838,postcode,462001,c1971734d4b56f86,bccf486a86dc7ef7,IMPORT,follows_address_winner
+g_a8937d2fbb07c287,address,"145 Willow Rd, Jaipur",ccafdeab1114fadb,d8921d6ffa2345dc,WEB,tie_break_smallest_id
+g_a8937d2fbb07c287,dob,1956-02-18,ccafdeab1114fadb,d8921d6ffa2345dc,WEB,majority_value
+g_a8937d2fbb07c287,email,,,,,no_value
+g_a8937d2fbb07c287,full_name,Benjamin Price,ccafdeab1114fadb,d8921d6ffa2345dc,WEB,tie_break_smallest_id
+g_a8937d2fbb07c287,phone,09462475107,ccafdeab1114fadb,d8921d6ffa2345dc,WEB,tie_break_smallest_id
+g_a8937d2fbb07c287,postcode,302001,ccafdeab1114fadb,d8921d6ffa2345dc,WEB,follows_address_winner
+g_adb4759950413ddc,address,"187 Meadow Road, Delhi",3edc04bf246d379d,298b81a6ecbd1b07,CRM,latest_updated_at
+g_adb4759950413ddc,dob,1971-02-08,3edc04bf246d379d,298b81a6ecbd1b07,CRM,majority_value
+g_adb4759950413ddc,email,ravi.johnson.00005@example.com,3edc04bf246d379d,298b81a6ecbd1b07,CRM,source_priority
+g_adb4759950413ddc,full_name,Ravi Johnson,3edc04bf246d379d,298b81a6ecbd1b07,CRM,source_priority
+g_adb4759950413ddc,phone,9165667010,3edc04bf246d379d,298b81a6ecbd1b07,CRM,latest_updated_at
+g_adb4759950413ddc,postcode,110001,3edc04bf246d379d,298b81a6ecbd1b07,CRM,follows_address_winner
+g_b6c84bc10820b427,address,"196 Cedar Road, Surat",c8a792a8e08b3911,a7b4007e83448342,CRM,tie_break_smallest_id
+g_b6c84bc10820b427,dob,,,,,no_value
+g_b6c84bc10820b427,email,robert.collins.00033@example.org,c8a792a8e08b3911,a7b4007e83448342,CRM,tie_break_smallest_id
+g_b6c84bc10820b427,full_name,Bob Collins,c8a792a8e08b3911,a7b4007e83448342,CRM,tie_break_smallest_id
+g_b6c84bc10820b427,phone,9407581814,c8a792a8e08b3911,a7b4007e83448342,CRM,tie_break_smallest_id
+g_b6c84bc10820b427,postcode,395001,c8a792a8e08b3911,a7b4007e83448342,CRM,follows_address_winner
+g_c6165646836ee558,address,"62 Market Rd, Nagpur",0dd666fbdf9ba1ee,73e4b0faa8d4d4cb,IMPORT,tie_break_smallest_id
+g_c6165646836ee558,dob,1996-11-21,0dd666fbdf9ba1ee,73e4b0faa8d4d4cb,IMPORT,majority_value
+g_c6165646836ee558,email,,,,,no_value
+g_c6165646836ee558,full_name,"Miler, Karan",0dd666fbdf9ba1ee,73e4b0faa8d4d4cb,IMPORT,tie_break_smallest_id
+g_c6165646836ee558,phone,96706 54051,0dd666fbdf9ba1ee,73e4b0faa8d4d4cb,IMPORT,tie_break_smallest_id
+g_c6165646836ee558,postcode,440001,0dd666fbdf9ba1ee,73e4b0faa8d4d4cb,IMPORT,follows_address_winner
+g_c652236bc2249eb6,address,,,,,no_value
+g_c652236bc2249eb6,dob,1960-05-20,d3b81341d7a60534,fef3b6dea69ec378,IMPORT,majority_value
+g_c652236bc2249eb6,email,akash.reed.00016@example.net,d3b81341d7a60534,fef3b6dea69ec378,IMPORT,tie_break_smallest_id
+g_c652236bc2249eb6,full_name,Aash Reed,d3b81341d7a60534,fef3b6dea69ec378,IMPORT,tie_break_smallest_id
+g_c652236bc2249eb6,phone,99361 83242,d3b81341d7a60534,fef3b6dea69ec378,IMPORT,tie_break_smallest_id
+g_c652236bc2249eb6,postcode,,,,,no_value
+g_cdfad5ea8df6586f,address,"98 Station Road, Patna",823c0171101d308c,456094ca5dc37965,CRM,tie_break_smallest_id
+g_cdfad5ea8df6586f,dob,2002-11-12,823c0171101d308c,456094ca5dc37965,CRM,majority_value
+g_cdfad5ea8df6586f,email,isha.ward.00023@example.net,823c0171101d308c,456094ca5dc37965,CRM,tie_break_smallest_id
+g_cdfad5ea8df6586f,full_name,I Ward,823c0171101d308c,456094ca5dc37965,CRM,tie_break_smallest_id
+g_cdfad5ea8df6586f,phone,91604 81754,823c0171101d308c,456094ca5dc37965,CRM,tie_break_smallest_id
+g_cdfad5ea8df6586f,postcode,800001,823c0171101d308c,456094ca5dc37965,CRM,follows_address_winner
+g_dd5b7eebc1a1a494,address,"216 Fern Road, Surat",4542bed5b7f070c7,51d7d4086ef19854,WEB,tie_break_smallest_id
+g_dd5b7eebc1a1a494,dob,1979-03-20,4542bed5b7f070c7,51d7d4086ef19854,WEB,majority_value
+g_dd5b7eebc1a1a494,email,,,,,no_value
+g_dd5b7eebc1a1a494,full_name,Noah Miller,4542bed5b7f070c7,51d7d4086ef19854,WEB,tie_break_smallest_id
+g_dd5b7eebc1a1a494,phone,9734670656,4542bed5b7f070c7,51d7d4086ef19854,WEB,tie_break_smallest_id
+g_dd5b7eebc1a1a494,postcode,395001,4542bed5b7f070c7,51d7d4086ef19854,WEB,follows_address_winner
+g_ef1de66cecc93e49,address,"119 Fern Rd, Kochi",c145ad64928da8f7,15a989c811e9fc9f,IMPORT,latest_updated_at
+g_ef1de66cecc93e49,dob,1974-05-21,9a601ff423c6fb3e,98c4a32abf78e95a,CRM,majority_value
+g_ef1de66cecc93e49,email,john.perry.00002@example.org,9a601ff423c6fb3e,98c4a32abf78e95a,CRM,source_priority
+g_ef1de66cecc93e49,full_name,John Perry,9a601ff423c6fb3e,98c4a32abf78e95a,CRM,source_priority
+g_ef1de66cecc93e49,phone,09553419283,9a601ff423c6fb3e,98c4a32abf78e95a,CRM,tie_break_smallest_id
+g_ef1de66cecc93e49,postcode,682001,c145ad64928da8f7,15a989c811e9fc9f,IMPORT,follows_address_winner
+g_f1746c774e197a37,address,"138 Oak Road, Lucknow",493c53284bc16521,130a41d7d7176bd1,IMPORT,tie_break_smallest_id
+g_f1746c774e197a37,dob,1980-06-11,493c53284bc16521,130a41d7d7176bd1,IMPORT,majority_value
+g_f1746c774e197a37,email,info@example.com,493c53284bc16521,130a41d7d7176bd1,IMPORT,tie_break_smallest_id
+g_f1746c774e197a37,full_name,Daniel Taylor,493c53284bc16521,130a41d7d7176bd1,IMPORT,tie_break_smallest_id
+g_f1746c774e197a37,phone,09840449972,493c53284bc16521,130a41d7d7176bd1,IMPORT,tie_break_smallest_id
+g_f1746c774e197a37,postcode,226001,493c53284bc16521,130a41d7d7176bd1,IMPORT,follows_address_winner
+g_f7f7077ab2fea251,address,"56 Market Road, Patna",4621b089794161cb,4bb09f36da79d0d6,CRM,tie_break_smallest_id
+g_f7f7077ab2fea251,dob,1978-08-08,4621b089794161cb,4bb09f36da79d0d6,CRM,majority_value
+g_f7f7077ab2fea251,email,hannah.price.00024@mail.invalid,4621b089794161cb,4bb09f36da79d0d6,CRM,tie_break_smallest_id
+g_f7f7077ab2fea251,full_name,Hanah Price,4621b089794161cb,4bb09f36da79d0d6,CRM,tie_break_smallest_id
+g_f7f7077ab2fea251,phone,,,,,no_value
+g_f7f7077ab2fea251,postcode,800001,4621b089794161cb,4bb09f36da79d0d6,CRM,follows_address_winner
