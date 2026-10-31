@@ -5,6 +5,7 @@ from collections.abc import Sequence
 import logging
 from datetime import datetime, timezone
 import json
+import sqlite3
 
 from dedup.config import load_config
 from dedup.db import connect, init_schema
@@ -16,9 +17,9 @@ from dedup.generate import (
     generate_data,
 )
 from dedup.runlog import configure_logging
-from dedup.runlog import finish_run, mark_abandoned_runs, start_run
-from dedup.pipeline import stage1_ingest
+from dedup.pipeline import PipelineRunError, run_pipeline
 from dedup.evaluate import evaluate_database
+from dedup.report import write_report
 
 
 LOGGER = logging.getLogger(__name__)
@@ -28,7 +29,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="dedup")
     parser.add_argument("--log-level", dest="global_log_level")
     commands = parser.add_subparsers(dest="command", required=True)
-    for name in ("init-db", "run", "generate", "evaluate", "report"):
+    for name in ("init-db", "run", "generate", "evaluate", "report", "review-decide"):
         command_parser = commands.add_parser(name)
         command_parser.add_argument("--log-level", dest="command_log_level")
         if name == "init-db":
@@ -41,6 +42,16 @@ def build_parser() -> argparse.ArgumentParser:
         elif name == "evaluate":
             command_parser.add_argument("--db", required=True)
             command_parser.add_argument("--truth", required=True)
+        elif name == "report":
+            command_parser.add_argument("--db", required=True)
+            command_parser.add_argument("--out", required=True)
+            command_parser.add_argument("--export-dir")
+        elif name == "review-decide":
+            command_parser.add_argument("--db", required=True)
+            command_parser.add_argument("--pair-id", required=True)
+            command_parser.add_argument("--decision", choices=("merge", "not_merge"), required=True)
+            command_parser.add_argument("--reviewer", required=True)
+            command_parser.add_argument("--note", required=True)
         elif name == "generate":
             command_parser.add_argument("--rows", type=int, required=True)
             command_parser.add_argument("--seed", type=int, default=1)
@@ -98,6 +109,35 @@ def main(argv: Sequence[str] | None = None) -> int:
             parser.error(str(error))
         finally:
             connection.close()
+    if args.command == "report":
+        connection = connect(args.db)
+        try:
+            target = write_report(connection, args.out, args.export_dir)
+            print(f"Wrote {target}")
+            if args.export_dir:
+                print(f"Exported CSV tables to {args.export_dir}")
+            return 0
+        except (OSError, sqlite3.Error) as error:
+            parser.error(str(error))
+        finally:
+            connection.close()
+    if args.command == "review-decide":
+        connection = connect(args.db)
+        try:
+            decided_at = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+            connection.execute(
+                "INSERT INTO review_decisions (pair_id, decision, reviewer, decided_at, note) VALUES (?, ?, ?, ?, ?) "
+                "ON CONFLICT (pair_id) DO UPDATE SET decision=excluded.decision, reviewer=excluded.reviewer, "
+                "decided_at=excluded.decided_at, note=excluded.note",
+                (args.pair_id, args.decision, args.reviewer, decided_at, args.note),
+            )
+            connection.commit()
+            print(f"Saved {args.decision} decision for {args.pair_id}")
+            return 0
+        except sqlite3.Error as error:
+            parser.error(str(error))
+        finally:
+            connection.close()
     if args.command == "run":
         as_of = args.as_of
         if as_of:
@@ -110,32 +150,19 @@ def main(argv: Sequence[str] | None = None) -> int:
                 parser.error("--as-of must be an ISO-8601 timestamp")
         started_at = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
         connection = connect(args.db)
-        run_id = None
         try:
-            init_schema(connection)
-            mark_abandoned_runs(connection)
-            snapshot = dict(config)
-            snapshot["as_of"] = as_of or started_at
-            run_id = start_run(connection, started_at=started_at, input_files=args.input, config_snapshot=snapshot)
-            result = stage1_ingest(connection, args.input, config, {"run_id": run_id, "started_at": started_at, "as_of": as_of or started_at})
-            counts = {key: int(result.get(key, 0)) for key in (
-                "input_rows", "rejected_rows", "valid_rows", "new_version_rows", "duplicate_event_rows")}
-            finish_run(connection, run_id, str(result["status"]), counts, result["metrics"], result["error"])
-            if result["status"] == "failed":
-                print(f"Run {run_id} failed: {result['error']}")
-                return 1
+            init_schema(connection, config)
+            result = run_pipeline(connection, args.input, config, as_of=as_of, started_at=started_at)
+            counts = result["counts"]
             metrics = result["metrics"]
-            print(f"Run {run_id}: {result['status']}")
-            print("Input rows | Rejected by reason | New versions | Duplicate events")
-            print(f"{counts['input_rows']} | {metrics['rejects_by_reason']} | {counts['new_version_rows']} | {counts['duplicate_event_rows']}")
+            print(f"Run {result['run_id']}: {result['status']}")
+            summary_columns = ("input_rows", "rejected_rows", "valid_rows", "new_version_rows", "duplicate_event_rows",
+                               "unique_source_records", "golden_records", "merged_away", "review_pending")
+            print("Count | " + " | ".join(summary_columns) + " | rejects_by_reason")
+            print("Run | " + " | ".join(str(counts.get(key, 0)) for key in summary_columns) +
+                  f" | {metrics.get('rejects_by_reason', {})}")
             return 0
-        except Exception as error:
-            LOGGER.exception("run failed")
-            if run_id is not None:
-                try:
-                    finish_run(connection, run_id, "failed", {}, {}, str(error))
-                except Exception:
-                    LOGGER.exception("could not finish failed run %s", run_id)
+        except PipelineRunError as error:
             print(f"Run failed: {error}")
             return 1
         finally:

@@ -30,6 +30,10 @@ TODO: Explain the decisions from BUILD_PLAN.md section 15.2 and any implementati
 
 - Raw `source_system` remains byte-for-byte as received. `raw_customer_records.source_system_key` stores its trimmed uppercase form and references `source_systems`, allowing case- and whitespace-insensitive validation without rewriting source data.
 
+### Phase 6 review-decision choice
+
+- `review-decide` upserts a decision by `pair_id`, replacing the prior reviewer, timestamp, decision, and note. This lets a reviewer correct an earlier decision while preserving one current decision per pair; publishing never changes this table.
+
 ## Trade-offs and limitations
 
 TODO: Review BUILD_PLAN.md sections 13 and 15.3.

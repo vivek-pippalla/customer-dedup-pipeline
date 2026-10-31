@@ -3,6 +3,7 @@
 import hashlib
 import logging
 import sqlite3
+import json
 from collections import Counter
 from dataclasses import dataclass
 from datetime import datetime, timezone
@@ -18,9 +19,18 @@ from dedup.blocking import BlockingStats, build_blocks
 from dedup.cluster import build_clusters, check_clusters
 from dedup.classify import Decision
 from dedup.survivorship import GoldenRecord, build_golden
+from dedup.runlog import COUNT_COLUMNS, _utc_now_iso, finish_run, mark_abandoned_runs, start_run
 
 
 LOGGER = logging.getLogger(__name__)
+
+
+class PipelineRunError(RuntimeError):
+    """A failed pipeline execution that has already been recorded in runs."""
+
+    def __init__(self, run_id: str, message: str):
+        super().__init__(message)
+        self.run_id = run_id
 CLEAN_INSERT = (
     "INSERT INTO clean_customers (version_id, source_record_id, email_norm, phone_norm, name_norm, "
     "first_name_canon, first_is_initial, last_name_norm, address_norm, postcode_norm, updated_at_utc, dob_norm, soundex_last) "
@@ -127,6 +137,82 @@ def compute_all(conn: sqlite3.Connection, config: Mapping[str, object]) -> Compu
     }
     return ComputeResult(tuple(golden_records), tuple(members), tuple(lineage_rows), candidate_pairs,
                          review_pairs, tuple(clusters), tuple(auto_pairs), tuple(all_classified), stats, counts)
+
+
+def run_pipeline(
+    conn: sqlite3.Connection, paths: Sequence[str | Path], config: Mapping[str, object],
+    as_of: str | None = None, run_id: str | None = None, started_at: str | None = None,
+    fault_hook=None,
+) -> dict[str, object]:
+    """Run ingest, in-memory compute, atomic publish, reconciliation and run logging."""
+    from dataclasses import asdict
+
+    from dedup.publish import publish
+
+    started = started_at or _utc_now_iso()
+    reference_time = as_of or started
+    input_files = [str(path) for path in paths]
+    snapshot = dict(config)
+    snapshot["as_of"] = reference_time
+    mark_abandoned_runs(conn)
+    identifier = start_run(conn, run_id=run_id, started_at=started, input_files=input_files,
+                           config_snapshot=snapshot)
+    stage_counts: dict[str, int] = {}
+    metrics: dict[str, object] = {}
+    error_message: str | None = None
+    try:
+        LOGGER.info("stage 1 ingest started run_id=%s files=%s", identifier, len(input_files))
+        staged = stage1_ingest(conn, paths, config, {"run_id": identifier, "started_at": started, "as_of": reference_time})
+        stage_counts = {key: int(staged.get(key, 0)) for key in (
+            "input_rows", "rejected_rows", "valid_rows", "new_version_rows", "duplicate_event_rows")}
+        metrics.update(staged.get("metrics", {}))
+        for warning in metrics.get("warnings", []):
+            LOGGER.warning("run_id=%s %s", identifier, warning)
+        LOGGER.info("stage 1 ingest finished run_id=%s counts=%s", identifier, stage_counts)
+        if staged["status"] == "failed":
+            raise PipelineRunError(identifier, str(staged["error"]))
+        if staged["status"] == "success_empty":
+            finish_run(conn, identifier, "success_empty", stage_counts, metrics, None)
+            return {"run_id": identifier, "status": "success_empty", "counts": stage_counts, "metrics": metrics}
+
+        LOGGER.info("stage 2 compute started run_id=%s", identifier)
+        computed = compute_all(conn, config)
+        decision_counts = Counter(pair.result.decision for pair in computed.classified_pairs)
+        metrics.update({
+            "blocking_stats": asdict(computed.blocking_stats),
+            "decision_counts": dict(sorted(decision_counts.items())),
+        })
+        LOGGER.info("stage 2 compute finished run_id=%s counts=%s", identifier, dict(computed.counts))
+
+        complete_counts = dict(stage_counts)
+        complete_counts.update(computed.counts)
+        for column in COUNT_COLUMNS:
+            complete_counts.setdefault(column, 0)
+        LOGGER.info("stage 3 publish started run_id=%s candidates=%s", identifier, len(computed.candidate_pairs))
+        reconciliation = publish(
+            conn, computed, identifier, fault_hook=fault_hook,
+            input_counts=stage_counts,
+            rejects_by_reason=metrics.get("rejects_by_reason", {}),
+        )
+        metrics["reconciliation"] = reconciliation
+        LOGGER.info("stage 3 publish finished run_id=%s counts=%s", identifier, computed.counts)
+        finish_run(conn, identifier, "success", complete_counts, metrics, None)
+        return {"run_id": identifier, "status": "success", "counts": complete_counts, "metrics": metrics,
+                "compute_result": computed}
+    except Exception as error:
+        if conn.in_transaction:
+            conn.rollback()
+        error_message = str(error)
+        metrics["error"] = error_message
+        LOGGER.exception("pipeline run failed run_id=%s", identifier)
+        try:
+            failed_counts = {column: stage_counts.get(column, 0) for column in COUNT_COLUMNS}
+            finish_run(conn, identifier, "failed", failed_counts, metrics, error_message)
+        except Exception:
+            LOGGER.exception("could not persist failed run run_id=%s", identifier)
+        if isinstance(error, PipelineRunError):
+            raise
+        raise PipelineRunError(identifier, error_message) from error
 
 
 def _config_value(config: Mapping[str, object], section: str, key: str, default: object) -> object:
