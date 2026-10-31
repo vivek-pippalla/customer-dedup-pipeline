@@ -6,9 +6,10 @@ import sqlite3
 from collections import Counter
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Iterable, Mapping
+from typing import Iterable, Mapping, Sequence
 
 from dedup.db import transaction
+from dedup.classify import ClassifiedPair, classify_all as classify_candidates
 from dedup.ingest import BatchRead, RawRow, compute_keys, insert_versions, read_batch
 from dedup.normalize import normalize_row
 from dedup.validate import validate_rows
@@ -20,6 +21,26 @@ CLEAN_INSERT = (
     "first_name_canon, first_is_initial, last_name_norm, address_norm, postcode_norm, updated_at_utc, dob_norm, soundex_last) "
     "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ON CONFLICT (version_id) DO NOTHING"
 )
+
+
+def current_versions(conn: sqlite3.Connection) -> list[dict[str, object]]:
+    """Select one deterministic current clean version per source record."""
+    rows = conn.execute(
+        "WITH ranked AS ("
+        " SELECT c.*, r.row_hash, ROW_NUMBER() OVER ("
+        "  PARTITION BY c.source_record_id ORDER BY c.updated_at_utc DESC, r.row_hash ASC"
+        " ) AS version_rank FROM clean_customers c"
+        " JOIN raw_customer_records r ON r.version_id = c.version_id"
+        ") SELECT * FROM ranked WHERE version_rank = 1 ORDER BY source_record_id"
+    ).fetchall()
+    return [dict(row) for row in rows]
+
+
+def classify_all(
+    records: Sequence[Mapping[str, object]], pairs: Sequence[tuple[str, str]], config: Mapping[str, object],
+) -> list[ClassifiedPair]:
+    """Pipeline entry point for deterministic candidate scoring and classification."""
+    return classify_candidates(records, pairs, config)
 
 
 def _config_value(config: Mapping[str, object], section: str, key: str, default: object) -> object:

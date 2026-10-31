@@ -4,6 +4,7 @@ import argparse
 from collections.abc import Sequence
 import logging
 from datetime import datetime, timezone
+import json
 
 from dedup.config import load_config
 from dedup.db import connect, init_schema
@@ -17,6 +18,7 @@ from dedup.generate import (
 from dedup.runlog import configure_logging
 from dedup.runlog import finish_run, mark_abandoned_runs, start_run
 from dedup.pipeline import stage1_ingest
+from dedup.evaluate import evaluate_database
 
 
 LOGGER = logging.getLogger(__name__)
@@ -36,6 +38,9 @@ def build_parser() -> argparse.ArgumentParser:
             command_parser.add_argument("--db", required=True)
             command_parser.add_argument("--config", required=True)
             command_parser.add_argument("--as-of")
+        elif name == "evaluate":
+            command_parser.add_argument("--db", required=True)
+            command_parser.add_argument("--truth", required=True)
         elif name == "generate":
             command_parser.add_argument("--rows", type=int, required=True)
             command_parser.add_argument("--seed", type=int, default=1)
@@ -83,6 +88,16 @@ def main(argv: Sequence[str] | None = None) -> int:
         except ValueError as error:
             parser.error(str(error))
         return 0
+    if args.command == "evaluate":
+        connection = connect(args.db)
+        try:
+            result = evaluate_database(connection, args.truth, config)
+            print(json.dumps(result, indent=2, sort_keys=True))
+            return 0
+        except (OSError, ValueError) as error:
+            parser.error(str(error))
+        finally:
+            connection.close()
     if args.command == "run":
         as_of = args.as_of
         if as_of:
