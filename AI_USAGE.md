@@ -8,7 +8,7 @@ This document records the AI tools used during development, the extent of AI ass
 - **OpenAI Codex:** AI coding extension used within Antigravity to assist with project implementation, code changes, debugging, testing, and documentation.
 - **ChatGPT:** Used for project planning, technical discussions, reviewing implementation decisions, verification guidance, and documentation support during development.
 
-Exact model identifiers and a complete session-by-session prompt archive were not retained. The current prompt archive contains `prompts/session_00_planning.md` as a TODO stub and `prompts/README.md`; therefore, it is not presented as a complete record of every prompt used.
+Exact model identifiers were not retained. A prompt archive is maintained under `prompts/`, containing the initial project brief and recovered development-session records organized chronologically. The archive may not contain every historical prompt and is not presented as a complete record of every prompt used.
 
 ## Where AI generated most of the work
 
@@ -124,6 +124,6 @@ Automated test results are evidence about automated checks; they are not persona
 
 - OpenAI Codex, used through Antigravity, provided the majority of the code-generation and implementation assistance. ChatGPT was also used for planning, technical discussions, verification guidance, and documentation support.
 - The project was developed with AI assistance under my direction. I provided requirements, guided the implementation workflow, reviewed outputs, ran tests and verification commands, and made or confirmed project-level decisions.
-- The prompt archive is incomplete. `prompts/session_00_planning.md` remains a TODO stub, and the available archive should not be interpreted as a complete history of prompts used during development.
+- The prompt archive under `prompts/` contains the initial project brief and recovered development-session records. It may not include every historical prompt. Missing historical prompts have not been invented or presented as original records.
 - Automated test results and manual verification activities are documented separately. Manual verification claims in this record are limited to the activities I actually performed and the results observed.
 - Benchmark results are based on synthetic datasets and the documented test environment; they should not be interpreted as production performance or real-world customer matching accuracy guarantees.

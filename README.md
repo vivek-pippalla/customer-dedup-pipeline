@@ -307,6 +307,18 @@ All committed sample and generated benchmark records are synthetic. Do not treat
 
 AI tool usage, development contributions, personal verification activities, and limitations of the prompt archive are documented in [AI_USAGE.md](AI_USAGE.md).
 
+## Development history and prompt archive
+
+The `prompts/` directory contains recovered development prompts and project instructions, organized chronologically.
+
+- `session_00_planning.md` — initial project brief and standing instructions.
+- `session_01_phase_0_1_2.md` — project foundation and early implementation.
+- `session_02_phase_3_to_7.md` — implementation, evaluation, benchmarking, and SQL reporting.
+- `session_03_final_phase.md` — final documentation and clean-clone verification.
+- `prompts/README.md` — archive index and scope notes.
+
+The archive provides development context, not proof of implementation or verification. Refer to source code, tests, and reports for that evidence. Some historical prompts may not have been recovered.
+
 ## Project layout
 
 ```text

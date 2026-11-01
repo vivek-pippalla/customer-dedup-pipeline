@@ -1,7 +1,28 @@
-# Prompt log
+# Prompt Archive
 
-Save each AI session's date, tool, model, and exact prompt in a separate `session_NN.md` file.
+This directory contains the development prompts used during the creation of the `customer-dedup-pipeline` project as part of a 72-hour hiring challenge.
 
-## Archive status
+The archive is organized chronologically by development stage.
 
-The archive currently contains only `session_00_planning.md` and this README. `session_00_planning.md` is still a TODO stub and contains no exact prompt or tool/model record. No `session_01.md` or later session records are present. The number of actual implementation sessions and their session-number mapping cannot be established from the files in this directory; exact historical prompts have not been reconstructed. Add session records only from recoverable original prompt history, not from recollection or inferred prompts.
+## Session Index
+
+| File | Contents |
+|---|---|
+| `session_00_planning.md` | Initial project brief, environment context, and standing development instructions |
+| `session_01_phase_0_1_2.md` | Project foundation, configuration, database schema, deterministic IDs, and initial data ingestion |
+| `session_02_phase_3_to_7.md` | Normalization, validation, blocking, scoring, classification, clustering, survivorship, evaluation, performance benchmarking, and SQL reporting |
+| `session_03_final_phase.md` | README documentation, design notes, checklist, AI usage disclosure, and clean-clone verification |
+
+## How to Read the Archive
+
+Read the sessions in numerical order to follow the project's development history.
+
+The prompts document the requested work and constraints. They should not be interpreted as proof that every requested task was implemented or independently verified. Implementation and verification evidence is maintained in the project source code, tests, and reports.
+
+## Archive Scope and Limitations
+
+- The files preserve recovered user prompts and project instructions.
+- Assistant responses, tool execution logs, and generated progress summaries are excluded from the curated prompt records.
+- Original wording is retained where recovered.
+- The archive may not contain every prompt from the original conversations. Missing historical content has not been reconstructed or invented.
+- The archive is provided for development transparency and project context.
