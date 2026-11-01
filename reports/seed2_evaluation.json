@@ -1,0 +1,71 @@
+{
+  "auto_merge_pairs_only_pre_clustering": {
+    "f1": 0.8362235067437379,
+    "label": "auto_merge pairs only (pre-clustering)",
+    "pair_count": 3906,
+    "precision": 1.0,
+    "recall": 0.7185430463576159
+  },
+  "blocking_recall": 0.9584253127299485,
+  "blocking_stats": {
+    "capped_block_count": 3,
+    "capped_blocks": [
+      {
+        "key_type": "email",
+        "key_value": "support@example.net",
+        "pairs_skipped": 37128,
+        "size": 273
+      },
+      {
+        "key_type": "email",
+        "key_value": "accounts@example.org",
+        "pairs_skipped": 33930,
+        "size": 261
+      },
+      {
+        "key_type": "email",
+        "key_value": "info@example.com",
+        "pairs_skipped": 30381,
+        "size": 247
+      }
+    ],
+    "comparisons_blocked": 15030,
+    "comparisons_naive": 131390155,
+    "pairs_skipped_cap": 101439,
+    "per_key_block_counts": {
+      "email": 9903,
+      "phone": 10437,
+      "soundex_first_postcode": 8053
+    },
+    "reduction_ratio": 0.9998856078676519
+  },
+  "cluster_pairs": 3933,
+  "f1": 0.8395773294908742,
+  "false_auto_merge_count": 0,
+  "false_auto_merges": [],
+  "false_cluster_pair_count": 0,
+  "false_cluster_pairs": [],
+  "ground_truth_invalid_agreement": {
+    "agreement": 1.0,
+    "invalid_truth_rows": 2800,
+    "matched_rejects": 2800
+  },
+  "label": "final cluster pairs",
+  "miss_breakdown": {
+    "lost_to_cap": 11,
+    "not_blocked": 210,
+    "scored_non_match": 0
+  },
+  "precision": 1.0,
+  "recall": 0.7235099337748344,
+  "review_queue_size": 4020,
+  "scored_non_match_details": [],
+  "true_duplicate_pairs": 5436,
+  "true_pairs_found": {
+    "auto_merge": 3906,
+    "final_clusters": 3933,
+    "missed_entirely": 221,
+    "review": 1304
+  },
+  "valid_source_records": 16211
+}
