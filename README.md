@@ -204,7 +204,7 @@ Run the test suite from the repository root:
 python -m pytest
 ```
 
-The tests cover pure transformations and decision rules (IDs, ingest, validation, normalization, blocking, scoring, classification, clustering, survivorship), database constraints and transaction rollback, end-to-end reruns and ordering, fault injection, SQL reconciliation, generator determinism, evaluation, and CLI/package smoke checks. The saved transcript [reports/pytest_output.txt](reports/pytest_output.txt) contains one full-suite run: **91 passed in 1.37s** on Python 3.11.18. The separately verified clean-clone run passed 91 tests in 1.80s; details are below.
+The tests cover pure transformations and decision rules (IDs, ingest, validation, normalization, blocking, scoring, classification, clustering, survivorship), database constraints and transaction rollback, end-to-end reruns and ordering, fault injection, SQL reconciliation, generator determinism, evaluation, and CLI/package smoke checks. The saved transcript [reports/pytest_output.txt](reports/pytest_output.txt) contains one full-suite run: **94 passed in 1.72s** on Python 3.11.18 (Windows). The separately verified clean-clone run passed 91 tests in 1.80s; details are below.
 
 ## Clean-clone verification
 
@@ -212,7 +212,7 @@ Phase 8C was verified from the public repository cloned to `D:\PROJECTS\TESTING_
 
 The sample pipeline succeeded with 50 input rows, 7 rejected, 43 valid, 41 unique source records, 32 golden records, 9 merged-away records, and 2 pending review pairs. The four exported CSVs—`golden_customers.csv`, `golden_lineage.csv`, `rejects.csv`, and `review_queue.csv`—matched the committed files in `data/sample/output/` byte-for-byte using `fc /b`.
 
-The clean-clone test command `python -m pytest -p no:cacheprovider --basetemp=test-temp` passed **91 tests in 1.80s**. A separate 2,000-row seed-3 dataset was generated, processed, and evaluated successfully. The exact clean-clone pytest console output was not added to `reports/pytest_output.txt`; that file retains its separately captured 91-pass run shown above.
+The clean-clone test command `python -m pytest -p no:cacheprovider --basetemp=test-temp` passed **91 tests in 1.80s**. A separate 2,000-row seed-3 dataset was generated, processed, and evaluated successfully. The exact clean-clone pytest console output was not added to `reports/pytest_output.txt`; that file contains the separate 94-pass full-suite run described above.
 
 ## Evaluation and performance evidence
 
@@ -283,7 +283,7 @@ The first nine rows below are the required edge-case scenarios from section 8 of
 | Acceptance 3: counts and aggregates reconcile | [reports/reconciliation.md](reports/reconciliation.md); publish assertions and `sql/sample_queries.sql` |
 | Acceptance 4: invalid records traceable | `tests/test_ingest.py::test_wrong_column_count_is_structural_reject_and_read_continues`; reject fields in [docs/DATA_DICTIONARY.md](docs/DATA_DICTIONARY.md) |
 | Acceptance 5: reruns create no duplicates | `tests/test_pipeline_e2e.py::test_rerun_is_idempotent_review_decisions_persist_and_empty_leaves_outputs` |
-| Acceptance 6: tests pass | The saved run in [reports/pytest_output.txt](reports/pytest_output.txt) shows 91 passed in 1.37s on Python 3.11.18; the separate Phase 8C clean-clone run passed 91 in 1.80s. |
+| Acceptance 6: tests pass | The saved run in [reports/pytest_output.txt](reports/pytest_output.txt) shows 94 passed in 1.72s on Python 3.11.18 (Windows); the separate Phase 8C clean-clone run passed 91 in 1.80s. |
 | Acceptance 7: clean-environment setup | Phase 8C clean-clone verification is complete; details and sample CSV comparisons are in the section above. The exact clean-clone console log is not saved in this repository. |
 
 ## Limitations and next steps

@@ -43,7 +43,7 @@ AI coding assistance generated or modified substantial portions of the applicati
 
 ## Personal verification
 
-Automated test results are evidence about automated checks; they are not personal/manual verification. The saved `reports/pytest_output.txt` transcript records **91 passed in 1.37s on Python 3.11.18**. The separate Phase 8C clean-clone run passed 91 tests in 1.80s; its exact console output is not saved in the repository.
+Automated test results are evidence about automated checks; they are not personal/manual verification. The saved `reports/pytest_output.txt` transcript records **94 passed in 1.72s on Python 3.11.18 (Windows)**. The separate Phase 8C clean-clone run passed 91 tests in 1.80s; its exact console output is not saved in the repository.
 
 - [x] Shuffle/reversed-file verification.
   - Test: `tests/test_pipeline_e2e.py::test_shuffled_rows_and_reversed_files_produce_same_golden_tables`

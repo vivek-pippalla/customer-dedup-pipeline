@@ -73,6 +73,68 @@ def test_schema_mismatch_marks_run_failed_and_extra_columns_warn(tmp_path):
         conn.close()
 
 
+def test_later_file_schema_failure_preserves_published_output_until_valid_retry(tmp_path):
+    baseline = write_csv(tmp_path / "baseline.csv", [[
+        "CRM", "baseline", "Jane Doe", "jane@example.test", "9876543210", "1 Main Road", "123456", "", "2025-01-01T00:00:00Z",
+    ]])
+    earlier_valid = write_csv(tmp_path / "retry.csv", [[
+        "WEB", "new-record", "Alex Roe", "alex@example.test", "9123456780", "9 Other Road", "654321", "", "2025-01-02T00:00:00Z",
+    ]])
+    later_schema_error = write_csv(tmp_path / "bad_schema.csv", [], CSV_COLUMNS[:-1])
+    conn = connect(tmp_path / "multi_file_failure.db")
+    try:
+        config = load_config()
+        init_schema(conn, config)
+        run_pipeline(conn, [baseline], config, as_of=AS_OF, run_id="run_baseline_published")
+        published_before = snapshot_outputs(conn)
+        raw_before = [tuple(row) for row in conn.execute(
+            "SELECT * FROM raw_customer_records ORDER BY version_id"
+        )]
+
+        try:
+            run_pipeline(
+                conn, [earlier_valid, later_schema_error], config,
+                as_of=AS_OF, run_id="run_later_file_schema_error",
+            )
+        except PipelineRunError as error:
+            assert "schema_mismatch" in str(error)
+            assert "updated_at" in str(error)
+        else:
+            raise AssertionError("later file schema mismatch did not fail the run")
+
+        failed_run = conn.execute(
+            "SELECT status, input_rows, rejected_rows, valid_rows, new_version_rows, duplicate_event_rows, error_message "
+            "FROM runs WHERE run_id='run_later_file_schema_error'"
+        ).fetchone()
+        assert failed_run["status"] == "failed"
+        assert tuple(failed_run)[1:6] == (0, 0, 0, 0, 0)
+        assert "schema_mismatch" in failed_run["error_message"]
+        assert "updated_at" in failed_run["error_message"]
+        assert snapshot_outputs(conn) == published_before
+        assert [tuple(row) for row in conn.execute(
+            "SELECT * FROM raw_customer_records ORDER BY version_id"
+        )] == raw_before
+        assert conn.execute("SELECT COUNT(*) FROM rejects").fetchone()[0] == 0
+
+        retry = run_pipeline(conn, [earlier_valid], config, as_of=AS_OF, run_id="run_valid_retry")
+        assert retry["status"] == "success"
+        assert retry["counts"]["input_rows"] == 1
+        assert retry["counts"]["rejected_rows"] == 0
+        assert retry["counts"]["valid_rows"] == 1
+        assert retry["counts"]["new_version_rows"] == 1
+        assert retry["counts"]["duplicate_event_rows"] == 0
+        assert retry["counts"]["unique_source_records"] == 2
+        assert retry["counts"]["golden_records"] == 2
+        assert conn.execute("SELECT COUNT(*) FROM raw_customer_records").fetchone()[0] == 2
+        assert conn.execute("SELECT COUNT(*) FROM golden_members").fetchone()[0] == 2
+        assert conn.execute("PRAGMA foreign_key_check").fetchall() == []
+        for identity in retry["metrics"]["reconciliation"].values():
+            operands = [value for key, value in identity.items() if key != "identity"]
+            assert len(operands) == 2 and operands[0] == operands[1]
+    finally:
+        conn.close()
+
+
 def test_zero_byte_batch_succeeds_without_changing_published_outputs(tmp_path):
     source = write_csv(tmp_path / "one.csv", [["CRM", "one", "Jane Doe", "jane@example.test", "9876543210", "", "", "", "2025-01-01T00:00:00Z"]])
     zero_byte = tmp_path / "zero.csv"

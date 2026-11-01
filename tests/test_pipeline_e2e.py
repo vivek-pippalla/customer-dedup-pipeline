@@ -4,7 +4,7 @@ import csv
 
 from dedup.config import load_config
 from dedup.db import connect, init_schema
-from dedup.ingest import CSV_COLUMNS
+from dedup.ingest import CSV_COLUMNS, read_batch
 from dedup.pipeline import run_pipeline
 from dedup.report import export_tables
 from dedup.runlog import start_run
@@ -68,6 +68,63 @@ def test_rerun_is_idempotent_review_decisions_persist_and_empty_leaves_outputs(t
             ("golden_customers", "golden_id"), ("golden_members", "golden_id, source_record_id"),
             ("golden_lineage", "golden_id, field_name"), ("candidate_pairs", "pair_id"), ("review_queue", "pair_id"))}
         assert after_empty == before_empty
+    finally:
+        conn.close()
+
+
+def test_rerunning_rejected_input_keeps_one_persistent_reject_and_counts_each_run(tmp_path):
+    source_rows = rows() + [
+        ["CRM", "bad-email", "Rejected Person", "not-an-email", "", "", "", "", "2025-01-04T00:00:00Z"],
+    ]
+    source = write_csv(tmp_path / "input_with_reject.csv", source_rows)
+    source_batch = read_batch(source)
+    expected_raw_line = next(row.raw_line for row in source_batch.rows if row.source_row_number == 4)
+    conn = connect(":memory:")
+    try:
+        config = load_config()
+        init_schema(conn, config)
+        first = run_pipeline(conn, [source], config, as_of="2025-02-01T00:00:00Z", run_id="run_reject_first")
+        raw_before = output_rows(conn, "raw_customer_records", "version_id")
+        reject_before = conn.execute(
+            "SELECT reject_id, source_file, source_row_number, reason_code, raw_line, first_seen_run_id "
+            "FROM rejects ORDER BY reject_id"
+        ).fetchall()
+
+        second = run_pipeline(conn, [source], config, as_of="2025-02-02T00:00:00Z", run_id="run_reject_second")
+        reject_after = conn.execute(
+            "SELECT reject_id, source_file, source_row_number, reason_code, raw_line, first_seen_run_id "
+            "FROM rejects ORDER BY reject_id"
+        ).fetchall()
+
+        assert len(reject_before) == 1
+        assert reject_before == reject_after
+        assert reject_after[0][1:] == (
+            "input_with_reject.csv", 4, "invalid_email", expected_raw_line,
+            "run_reject_first",
+        )
+        assert output_rows(conn, "raw_customer_records", "version_id") == raw_before
+
+        assert first["counts"]["input_rows"] == 4
+        assert first["counts"]["rejected_rows"] == 1
+        assert first["counts"]["valid_rows"] == 3
+        assert first["counts"]["new_version_rows"] == 3
+        assert first["counts"]["duplicate_event_rows"] == 0
+        assert second["counts"]["input_rows"] == 4
+        assert second["counts"]["rejected_rows"] == 1
+        assert second["counts"]["valid_rows"] == 3
+        assert second["counts"]["new_version_rows"] == 0
+        assert second["counts"]["duplicate_event_rows"] == 3
+        assert first["metrics"]["rejects_by_reason"] == {"invalid_email": 1}
+        assert second["metrics"]["rejects_by_reason"] == {"invalid_email": 1}
+        for run_id in ("run_reject_first", "run_reject_second"):
+            run = conn.execute(
+                "SELECT input_rows, rejected_rows, valid_rows, new_version_rows, duplicate_event_rows "
+                "FROM runs WHERE run_id = ?", (run_id,),
+            ).fetchone()
+            assert tuple(run) == (4, 1, 3, 3 if run_id == "run_reject_first" else 0,
+                                  0 if run_id == "run_reject_first" else 3)
+        assert conn.execute("SELECT COUNT(*) FROM rejects WHERE first_seen_run_id='run_reject_first'").fetchone()[0] == 1
+        assert conn.execute("SELECT COUNT(*) FROM rejects WHERE first_seen_run_id='run_reject_second'").fetchone()[0] == 0
     finally:
         conn.close()
 

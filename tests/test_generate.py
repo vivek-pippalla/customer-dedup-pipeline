@@ -7,6 +7,11 @@ from pathlib import Path
 from dedup.generate import CSV_COLUMNS, TRUTH_COLUMNS, generate_data
 from dedup.wordlists import CITIES_AND_POSTCODES, FIRST_NAMES, LAST_NAMES, STREET_NAMES
 from dedup.ids import row_hash
+from dedup.config import load_config
+from dedup.db import connect, init_schema
+from dedup.evaluate import _reject_agreement
+from dedup.ingest import read_batch
+from dedup.pipeline import run_pipeline
 
 
 def _generate(directory: Path, seed: int = 42, rows: int = 50, batches: int = 1) -> tuple[list[Path], Path, Path]:
@@ -81,6 +86,52 @@ def test_invalid_rows_are_labelled(tmp_path: Path) -> None:
     assert invalid_rows
     assert all(row["injected_issue"] for row in invalid_rows)
     assert all(row["expected_reject_reason"] for row in invalid_rows)
+
+
+def test_generated_invalid_rows_match_pipeline_rejects_and_remain_traceable(tmp_path: Path) -> None:
+    """Generated invalid labels agree with ingestion rejects and preserve source details."""
+    files, truth_path, _ = _generate(tmp_path, rows=200)
+    with truth_path.open(encoding="utf-8", newline="") as truth_file:
+        truth_rows = list(csv.DictReader(truth_file))
+    expected = {
+        (row["source_file"], int(row["row_number"])): row["expected_reject_reason"]
+        for row in truth_rows if row["is_invalid"] == "true"
+    }
+    source_rows = {
+        (path.name, row.source_row_number): row.raw_line
+        for path in files
+        for batch in [read_batch(path)]
+        for row in (*batch.rows, *batch.structural_rejects)
+    }
+
+    conn = connect(":memory:")
+    try:
+        config = load_config()
+        init_schema(conn, config)
+        result = run_pipeline(
+            conn, files, config, as_of="2030-01-01T00:00:00Z", run_id="run_generated_invalids",
+        )
+        actual_rows = conn.execute(
+            "SELECT source_file, source_row_number, reason_code, raw_line "
+            "FROM rejects WHERE first_seen_run_id = ? ORDER BY source_file, source_row_number",
+            (result["run_id"],),
+        ).fetchall()
+        actual = {
+            (row["source_file"], int(row["source_row_number"])): row["reason_code"]
+            for row in actual_rows
+        }
+
+        assert actual == expected
+        assert _reject_agreement(conn, truth_rows) == {
+            "invalid_truth_rows": len(expected), "matched_rejects": len(expected), "agreement": 1.0,
+        }
+        assert len(actual_rows) == len(expected)
+        for row in actual_rows:
+            key = (row["source_file"], int(row["source_row_number"]))
+            assert row["raw_line"] == source_rows[key]
+            assert row["raw_line"].strip()
+    finally:
+        conn.close()
 
 
 def test_family_and_late_versions_exist_in_large_run(tmp_path: Path) -> None:

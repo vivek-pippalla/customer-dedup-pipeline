@@ -25,7 +25,7 @@ Status is based on the implemented behavior and evidence named in the final colu
 | [x] DONE | Counts and aggregates reconcile | SQL query `reconciliation_identities` in `sql/sample_queries.sql`; `reports/reconciliation.md`; publish assertions in `src/dedup/publish.py`. |
 | [x] DONE | Invalid records are traceable | `tests/test_ingest.py::test_wrong_column_count_is_structural_reject_and_read_continues`; reject columns are specified in `docs/DATA_DICTIONARY.md`. |
 | [x] DONE | Reruns create no duplicates | `tests/test_pipeline_e2e.py::test_rerun_is_idempotent_review_decisions_persist_and_empty_leaves_outputs` |
-| [x] DONE | Tests pass | `reports/pytest_output.txt`: saved run is **91 passed in 1.37s on Python 3.11.18**; separate Phase 8C clean-clone run was **91 passed in 1.80s**. |
+| [x] DONE | Tests pass | `reports/pytest_output.txt`: saved run is **94 passed in 1.72s on Python 3.11.18 (Windows)**; separate Phase 8C clean-clone run was **91 passed in 1.80s**. |
 | [x] DONE | Clean-environment setup works from a clean clone | Phase 8C verified public clone `D:\\PROJECTS\\TESTING_DEDUP\\customer-dedup-pipeline` at `0d8a73e`, fresh Conda `dedup-clean`, Python 3.11.18, both editable installs, six CLI commands, sample results, 91 tests in 1.80s, successful seed-3 2K generate/run/evaluate, and all four sample CSV exports byte-identical to `data/sample/output/` with `fc /b`. |
 
 ## Additional verification
@@ -54,7 +54,7 @@ These activities supplement the nine edge cases and seven acceptance criteria ab
 python -m pytest -p no:cacheprovider --basetemp=test-temp
 ```
 
-- Result: **91 passed in 1.37s**
+- Result: **94 passed in 1.72s on Python 3.11.18 (Windows)**
 - Saved console transcript: `reports/pytest_output.txt`
 
 ### Clean-clone environment (Phase 8C)

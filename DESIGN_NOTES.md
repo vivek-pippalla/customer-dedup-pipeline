@@ -1,6 +1,6 @@
 # Design notes
 
-These notes describe the implementation in `src/dedup/`, as checked against `docs/BUILD_PLAN.md`, tests, configuration, SQL, and saved reports. The prompt archive contains only a planning-session TODO stub; consequently, additions below are based on the implementation and the surviving Phase 1/2/6 notes, not on unavailable exact prompts.
+These notes describe the implementation in `src/dedup/`, as checked against `docs/BUILD_PLAN.md`, tests, configuration, SQL, saved reports, and recovered development prompts. The `prompts/` directory contains the initial project brief and recovered development-session prompts for Phases 0–2, 3–7, and final documentation and clean-clone work. The archive may not contain every historical prompt; missing prompts have not been reconstructed.
 
 ## Assumptions
 
@@ -72,7 +72,7 @@ These points are recorded in the existing Phase 1/2A/2B/6 notes in this file and
 - `run --as-of` supplies a reference time for future-timestamp validation; the generator uses fixed date ranges. This makes generated runs and tests independent of the wall clock when an as-of value is supplied.
 - Nickname canonicalization is a single-step lookup; `Last, First` is reordered before name normalization. Blocking uses only the implemented keys and cap.
 
-The prompt directory currently contains `prompts/session_00_planning.md` as a TODO stub and `prompts/README.md`; it does not contain archived exact prompts for the implementation phases. The points above are therefore code/notes-backed, not attributed to a specific missing prompt.
+The recovered prompt archive is maintained under `prompts/`. It preserves original user instructions where available, but it is not a complete record of every development conversation. The implementation details above are verified against the current code and tests; recovered prompts provide additional context where available.
 
 ## Trade-offs and limitations
 
@@ -99,8 +99,9 @@ Potential next steps, not implemented features: apply review decisions as cluste
 - Integration tests cover stage 1, pipeline publish, reconciliation, reruns, empty input, shuffled rows/reversed files, and exports.
 - Fault injection raises during publish and checks the previous published state, failed-run record, and successful retry.
 - Evaluation tests use hand-built truth; generator tests check seeded output and truth structure. `tests/test_sql_queries.py` exercises the SQL query examples.
-- The saved `reports/pytest_output.txt` transcript records `.venv\Scripts\python.exe -m pytest -p no:cacheprovider --basetemp=test-temp`: **91 passed in 1.37s on Python 3.11.18**. The separate Phase 8C clean-clone run passed 91 in 1.80s; its console output was not saved. These are automated test results, not manual review evidence.
+- The saved `reports/pytest_output.txt` transcript records `.venv\Scripts\python.exe -m pytest -p no:cacheprovider --basetemp=test-temp`: **94 passed in 1.72s on Python 3.11.18 (Windows)**. The separate Phase 8C clean-clone run passed 91 in 1.80s; its console output was not saved. These are automated test results, not manual review evidence.
 - Tests do not establish production accuracy, behavior under concurrent writers, or transliteration/name coverage outside the implemented rules.
+
 
 ## How I know it works
 
@@ -113,4 +114,4 @@ Potential next steps, not implemented features: apply review decisions as cluste
 | Were review cases and lineage manually inspected? | `AI_USAGE.md`; `reports/manual_reconciliation_check.md` | Twenty review-queue pairs and one three-member golden cluster were manually inspected. The examples are synthetic and not statistically representative. |
 | Is performance measured? | `reports/performance.md` reports the seed-3 2K and 100K experiments | Synthetic benchmark only; not a production capacity/accuracy claim. |
 | Was setup verified from a clean clone? | Phase 8C verification: public clone at `D:\\PROJECTS\\TESTING_DEDUP\\customer-dedup-pipeline`, commit `0d8a73e`; fresh Conda `dedup-clean`; README install/sample workflow; byte comparison against committed sample outputs | Clean-clone verification is DONE. The exact console log was not saved in the repository. |
-| Did the full suite pass? | `reports/pytest_output.txt` contains one saved run | Saved transcript: 91 passed in 1.37s on Python 3.11.18. Separate Phase 8C clean-clone run: 91 passed in 1.80s; its exact console output is not in the repository. |
+| Did the full suite pass? | `reports/pytest_output.txt` contains one saved run | Saved transcript: 94 passed in 1.72s on Python 3.11.18 (Windows). Separate Phase 8C clean-clone run: 91 passed in 1.80s; its exact console output is not in the repository. |
